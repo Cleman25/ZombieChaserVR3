@@ -6,7 +6,7 @@ public class Autowalk : MonoBehaviour {
     private const int RIGHT_ANGLE = 90;
 
     // This variable determinates if the player will move or not 
-    private bool isWalking = false;
+    public bool isWalking = false;
 
     Transform mainCamera = null;
 
@@ -21,7 +21,7 @@ public class Autowalk : MonoBehaviour {
     public bool walkWhenLookDown;
 
     [Tooltip("Activate this checkbox if the player shall move when the screen is tapped.")]
-    public bool walkWhenTapped;
+    public bool walkWhenTapped = true;
 
     [Tooltip("This has to be an angle from 0° to 90°")]
     public double thresholdAngle;
@@ -36,19 +36,15 @@ public class Autowalk : MonoBehaviour {
 
     void Start() {
         mainCamera = Camera.main.transform;
+        speed = GetComponent<Character>().speed;
     }
 
     void Update() {
+        speed = GetComponent<Character>().speed;
         // Walk when the Cardboard Trigger is used 
         if (walkWhenTriggered && !walkWhenLookDown && !walkWhenTapped && !isWalking) {
             isWalking = true;
         } else if (walkWhenTriggered && !walkWhenLookDown && isWalking) {
-            isWalking = false;
-        }
-
-        if(walkWhenTapped && !walkWhenTriggered && !walkWhenLookDown && !isWalking) {
-            isWalking = true;
-        } else {
             isWalking = false;
         }
 
@@ -75,17 +71,39 @@ public class Autowalk : MonoBehaviour {
         }
 
         if (isWalking) {
+            GetComponent<Character>().isRunning = true;
             Vector3 direction = new Vector3(mainCamera.transform.forward.x, 0, mainCamera.transform.forward.z).normalized * speed * Time.deltaTime;
             Quaternion rotation = Quaternion.Euler(new Vector3(0, -transform.rotation.eulerAngles.y, 0));
             transform.Translate(rotation * direction);
+        } else {
+            GetComponent<Character>().isRunning = false;
         }
 
         if (freezeYPosition) {
             transform.position = new Vector3(transform.position.x, yOffset, transform.position.z);
         }
 
-        if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) {
+        if(walkWhenTapped) {
+            foreach(Touch touch in Input.touches) {
+                //if (touch.phase == TouchPhase.Began)  {
+                    //isWalking = !isWalking;
+                    //Debug.Log("Screen tapped 2nd");
+                //}
+                if(touch.phase == TouchPhase.Ended) {
+                    isWalking = !isWalking;
+                    Debug.Log("Screen held");
+                }
+            }
+        }
 
+        //if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began && walkWhenTapped) {
+        //    isWalking = !isWalking;
+            Debug.Log("Screen tapped");
+        //}
+
+        if (Input.GetMouseButtonDown(0) && walkWhenTapped) {
+            isWalking = !isWalking;
+            Debug.Log("Mouse button clicked");
         }
     }
 
