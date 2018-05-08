@@ -15,6 +15,7 @@ public class Character : MonoBehaviour {
     public bool isRunning;
     // Use this for initialization
     void Start () {
+        currentStamina = maxStamina;
         speed = defaultSpeed;
 	}
 	
