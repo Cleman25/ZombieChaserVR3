@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MiniArrow : MonoBehaviour {
+public class Rotate : MonoBehaviour {
     public GameObject camera;
 	// Use this for initialization
 	void Start () {
