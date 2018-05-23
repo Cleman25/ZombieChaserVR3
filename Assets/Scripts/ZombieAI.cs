@@ -13,6 +13,7 @@ public class ZombieAI : MonoBehaviour {
     public Vector3 playerLastPos;
     public Vector3 playerPos;
     public Vector3 currentPos;
+    public Vector3 axis = Vector3.up;
     public float distanceToTarget;
 
     public Transform ray;
@@ -30,15 +31,16 @@ public class ZombieAI : MonoBehaviour {
 
     public float patrolSpeed = 4;
     public float chaseSpeed = 5;
+    public float rotationAngle = 360;
     public float rotationSpeed = 5;
     public float attackDistance = 0.5f;
     public float giveUpDistance = 5;
-    public float chaseDistance = 2;
+    public float chaseDistance = 5;
     public float repeatAttackTime = 1;
     public float rotationDamping = 6;
     public float chaseTimer = 10;
     public float searchTimer = 4;
-    public float searchDistance = 3;
+    public float searchDistance = 20;
     public float searchTimeRedux = 0.01f;
     public float searchWait = 3;
     public int searchRays = 10;
@@ -71,6 +73,14 @@ public class ZombieAI : MonoBehaviour {
 	
 	void Update () {
         distanceToTarget = (target.position - myTransform.position).magnitude;
+        if(distanceToTarget < chaseDistance) {
+        //    if(!isChasing) {
+        //        chaseTimer = 10;
+        //    }
+            SetState(ZombieStates.Chase);
+        } else {
+            SetState(ZombieStates.Search);
+        }
         switch(currentState) {
             case ZombieStates.Idle:
                 if(!nm.pathPending && nm.remainingDistance < 0.5f) {
@@ -81,9 +91,11 @@ public class ZombieAI : MonoBehaviour {
                 GoToDestination();
                 break;
             case ZombieStates.Search:
-                StartCoroutine(Search());
+                searchTimer = 4;
+                Search();
                 break;
             case ZombieStates.Chase:
+                chaseTimer = 10;
                 Chase();
                 break;
             case ZombieStates.Attack:
@@ -107,14 +119,14 @@ public class ZombieAI : MonoBehaviour {
 
     public void GoToDestination() {
         if (nodes.Count > 0) {
+            //if(!foundTarget) {
             nm.destination = nodes[currentNode].position;
-            if(atNode) {
-                currentNode = (currentNode + 1) % nodes.Count;
-                isPatrolling = false;
-                isSearching = true;
-                atNode = false;
-                SetState(ZombieStates.Search);
-            }
+            //if(atNode) {
+            SetState(ZombieStates.Search);
+            currentNode = (currentNode + 1) % nodes.Count;
+            //} else {
+            //}
+            //}
             //if (currentNode >= nodes.Count) {
             //     currentNode = 0;
             //} else {
@@ -125,10 +137,19 @@ public class ZombieAI : MonoBehaviour {
 
     public void Chase() {
         chaseSpeed = 5;
-        myTransform.position += myTransform.forward * chaseSpeed * Time.deltaTime;
-        myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(target.position - myTransform.position), rotationSpeed * Time.deltaTime * rotationDamping);
-        if(distanceToTarget < attackDistance) {
-            SetState(ZombieStates.Attack);
+        if (chaseTimer > 0) {
+            chaseTimer -= Time.deltaTime;
+            isChasing = true;
+            myTransform.LookAt(target);
+            myTransform.position += myTransform.forward * chaseSpeed * Time.deltaTime;
+            myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(target.position - myTransform.position), rotationSpeed * Time.deltaTime * rotationDamping);
+            if(distanceToTarget < attackDistance) {
+                chaseTimer = 10;
+                //SetState(ZombieStates.Attack);
+            } else {
+                chaseTimer = 10;
+                SetState(ZombieStates.Patrol);
+            }
         }
     }
 
@@ -143,42 +164,18 @@ public class ZombieAI : MonoBehaviour {
         }
     }
 
-    public IEnumerator Search() {
-        if(!isPatrolling) {
-            searchTimer = 4;
-            myTransform.Rotate(0, rotationSpeed * Time.deltaTime * rotationSpeed, 0);
-            while (searchTimer > 0.1) {
-                float angle = 0;
-                for(int i=0; i < searchRays; i++) {
-                    float x = Mathf.Sin(angle);
-                    float y = Mathf.Cos(angle);
-                    angle += 2 * Mathf.PI / searchRays;
-
-                    Vector3 dir = new Vector3(ray.position.x + x, ray.position.y + y, 0);
-                    Debug.DrawRay(ray.position, dir, Color.red);
-                    if (Physics.Raycast(ray.position, ray.forward, out hit, searchDistance)) {
-                        Debug.Log(hit.collider.name);
-                        if(hit.collider.CompareTag("Player")) {
-                            foundTarget = true;
-                            myTransform.LookAt(target);
-                            SetPlayerPos(target);
-                            isChasing = true;
-                            isPatrolling = false;
-                            SetState(ZombieStates.Chase);
-                        } else {
-                            foundTarget = false;
-                            isPatrolling = true;
-                            isChasing = false;
-                            SetState(ZombieStates.Patrol);
-                        }
-                        isSearching = false;
-                    }
-                }
-                searchTimer -= Time.deltaTime * searchTimeRedux;
-                yield return null;
+    public void Search() {
+        myTransform.Rotate(0, rotationSpeed * Time.deltaTime, 0, Space.World);
+        Debug.DrawRay(myTransform.position, myTransform.forward, Color.red);
+        if (Physics.Raycast(ray.position, ray.forward, out hit, searchDistance)) {
+            Debug.Log(hit.collider.name);
+            if(hit.collider.CompareTag("Player")) {
+                foundTarget = true;
+                SetState(ZombieStates.Chase);
+            } else {
+                SetState(ZombieStates.Patrol);
             }
         }
-        yield return new WaitForSeconds(searchWait);
     }
 
     public void SetPlayerPos(Transform pt) {
