@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum ZombieStates {
-    Idle,
-    Patrol,
-    Chase,
-    Attack,
-    Stunned,
-    Dead
+    Idle = 0,
+    Patrol = 1,
+    Search = 2,
+    Chase = 3,
+    Attack = 4,
+    Stunned = 5,
+    Dead = 6
 }
