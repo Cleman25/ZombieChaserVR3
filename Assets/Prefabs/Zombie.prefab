@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 95194695188460756}
   m_Layer: 0
   m_Name: Body
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 1
@@ -1114,7 +1114,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1825768233287678}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 66e352dd8791b7b43b429050f847c8a6, type: 2}
   m_CullingMode: 0
@@ -1214,16 +1214,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3d39de157d36a04faae7d7bd0f8733d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterController: {fileID: 0}
+  characterController: {fileID: 143747735029542044}
   myTransform: {fileID: 4151400040109158}
   currentPos: {x: 0, y: 0, z: 0}
-  nm: {fileID: 0}
+  nm: {fileID: 195151625177045398}
   animator: {fileID: 95194695188460756}
-  h: {fileID: 0}
+  h: {fileID: 114002454305075018}
   isStunned: 0
   isDead: 0
   atNode: 0
-  light: {fileID: 0}
+  light: {fileID: 108286253193593952}
   currentState: 0
   previousState: 0
   currentNode: 0
@@ -1234,14 +1234,14 @@ MonoBehaviour:
   playerPos: {x: 0, y: 0, z: 0}
   distanceToTarget: 0
   isPatrolling: 0
-  patrolSpeed: 4
+  patrolSpeed: 5
   rotationAngle: 360
-  rotationSpeed: 5
+  rotationSpeed: 7
   rotationDamping: 6
   isChasing: 0
-  chaseSpeed: 5
-  giveUpDistance: 15
-  chaseDistance: 10
+  chaseSpeed: 7
+  giveUpDistance: 30
+  chaseDistance: 20
   chaseTimer: 10
   isSearching: 0
   searchTimer: 4

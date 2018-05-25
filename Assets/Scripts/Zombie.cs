@@ -75,8 +75,8 @@ public class Zombie : MonoBehaviour {
         if(!h)
             h = GetComponent<Health>();
 
-        if (!animator)
-            animator = GetComponent<Animator>();
+        //if (!animator)
+            //animator = GetComponent<Animator>();
 
         if (!light)
             light = GetComponentInChildren<Light>();
@@ -85,11 +85,11 @@ public class Zombie : MonoBehaviour {
     }
 
     void Start () {
-        if(!target) {
+        //if(!target) {
             target = GameObject.FindGameObjectWithTag("Player").transform;
             playerLastPos = target.position;
             SetPlayerPos(target);
-        }
+        //}
         GameObject[] pnodes = GameObject.FindGameObjectsWithTag("Node");
         if(pnodes.Length > 0) {
             for (int i = 0; i < pnodes.Length; i++) {
@@ -100,6 +100,7 @@ public class Zombie : MonoBehaviour {
         if(!nm)
             nm = GetComponent<NavMeshAgent>();
 
+        currentNode = Random.Range(0, nodes.Count);
         currentZombieState = Patrol;
         SetState(ZombieStates.Patrol);
     }
@@ -143,7 +144,7 @@ public class Zombie : MonoBehaviour {
 
     public void Attack() {
         light.color = Color.red;
-        animator.Play("Attack");
+        //animator.Play("Attack");
     }
 
     public void StopSearch() {
@@ -156,8 +157,8 @@ public class Zombie : MonoBehaviour {
         isSearching = true;
         //animator.SetBool("Searching", isSearching);
         searchTimer = 10;
-        animator.SetTrigger("Searching");
-        animator.Play("Search");
+        //animator.SetTrigger("Searching");
+        //animator.Play("Search");
         light.color = Color.yellow;
         //currentZombieState = Search;
         //SetState(ZombieStates.Search);
@@ -179,6 +180,7 @@ public class Zombie : MonoBehaviour {
             }
         } else {
             StopSearch();
+            foundTarget = false;
             isPatrolling = true;
             light.color = Color.green;
             //currentZombieState = Patrol;
@@ -204,8 +206,8 @@ public class Zombie : MonoBehaviour {
         if(chaseTimer > 0) {
             chaseTimer -= Time.deltaTime;
             myTransform.LookAt(target);
-            animator.SetTrigger("Patrolling");
-            animator.Play("Patrolling");
+            //animator.SetTrigger("Patrolling");
+            //animator.Play("Patrolling");
             myTransform.position += myTransform.forward * chaseSpeed * Time.deltaTime;
             //myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(target.position - myTransform.position), rotationSpeed * Time.deltaTime);
             if (distanceToTarget <= attackDistance) {
