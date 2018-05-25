@@ -5,7 +5,7 @@ using UnityEngine;
 public class Character : MonoBehaviour {
     public float currentStamina;
     public float speed;
-    private float defaultSpeed = 5;
+    public float defaultSpeed = 5;
     public float maxStamina = 100;
     private float staminaRegenTimer = 0.0f;
 
@@ -16,7 +16,8 @@ public class Character : MonoBehaviour {
     // Use this for initialization
     void Start () {
         currentStamina = maxStamina;
-        speed = defaultSpeed;
+        if(speed <= 0)
+            speed = defaultSpeed;
 	}
 	
 	// Update is called once per frame

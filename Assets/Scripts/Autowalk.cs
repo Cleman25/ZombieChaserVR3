@@ -40,6 +40,7 @@ public class Autowalk : MonoBehaviour {
     }
 
     void Update() {
+        mainCamera.transform.localPosition = Vector3.zero;
         speed = GetComponent<Character>().speed;
         // Walk when the Cardboard Trigger is used 
         if (walkWhenTriggered && !walkWhenLookDown && !walkWhenTapped && !isWalking) {
