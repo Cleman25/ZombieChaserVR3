@@ -9,20 +9,25 @@ public class Zombie : MonoBehaviour {
     public Transform myTransform;
     public Vector3 currentPos;
     public NavMeshAgent nm;
-    public Animator animator;
     public Health h;
     public bool isStunned;
     public bool isDead;
     public bool atNode;
-
+    public ZombieAnimation zAnim;
+    
+    [Header("Colour/Light Settings:")]
     public Light light;
+    public Color patrolColor = Color.green;
+    public Color stunnedColor = Color.black;
+    public Color attackColor = Color.red;
+    public Color chaseColor = Color.blue;
+    public Color searchColor = Color.yellow;
+    public Color idleColor = Color.white;
 
     [Header("States Settings:")]
     [SerializeField] [Tooltip("Current zombie state")]
     ZombieStates currentState;
     public ZombieStates previousState = ZombieStates.Idle;
-    public delegate void ZombieStatesDelegate();
-    public event ZombieStatesDelegate currentZombieState;
 
     [Header("Node Settings:")]
     public int currentNode = 0;
@@ -37,23 +42,18 @@ public class Zombie : MonoBehaviour {
 
     [Header("Patrol Settings:")]
     public bool isPatrolling;
-    public float patrolSpeed = 4;
-
-    [Header("Rotation Settings:")]
-    public float rotationAngle = 360;
-    public float rotationSpeed = 10;
-    public float rotationDamping = 6;
+    public float patrolSpeed = 7;
 
     [Header("Chase Settings:")]
     public bool isChasing;
     public float chaseSpeed = 7;
     public float giveUpDistance = 30;
     public float chaseDistance = 20;
-    public float chaseTimer = 10;
+    public float chaseTimer = 15;
 
     [Header("Search Settings:")]
     public bool isSearching;
-    public float searchTimer = 4;
+    public float searchTimer = 10;
     public float searchDistance = 50;
     public float searchRadius = 50;
     public float searchWait = 3;
@@ -75,21 +75,19 @@ public class Zombie : MonoBehaviour {
         if(!h)
             h = GetComponent<Health>();
 
-        //if (!animator)
-            //animator = GetComponent<Animator>();
-
         if (!light)
             light = GetComponentInChildren<Light>();
 
-        //animator.SetBool("Idling", true);
+        if (!zAnim)
+            zAnim = GetComponentInChildren<ZombieAnimation>();
     }
 
     void Start () {
-        //if(!target) {
+        if(!target) {
             target = GameObject.FindGameObjectWithTag("Player").transform;
             playerLastPos = target.position;
             SetPlayerPos(target);
-        //}
+        }
         GameObject[] pnodes = GameObject.FindGameObjectsWithTag("Node");
         if(pnodes.Length > 0) {
             for (int i = 0; i < pnodes.Length; i++) {
@@ -101,32 +99,34 @@ public class Zombie : MonoBehaviour {
             nm = GetComponent<NavMeshAgent>();
 
         currentNode = Random.Range(0, nodes.Count);
-        currentZombieState = Patrol;
         SetState(ZombieStates.Patrol);
     }
 	
-	// Update is called once per frame
 	void Update () {
+        Debug.DrawRay(ray.position, ray.forward, Color.red);
         distanceToTarget = (target.position - myTransform.position).magnitude;
         currentPos = transform.position;
         switch(currentState) {
             case ZombieStates.Idle:
+                zAnim.Idle();
                 if(!nm.pathPending && nm.remainingDistance < 0.5f) {
                     SetState(ZombieStates.Patrol);
                 }
                 break;
             case ZombieStates.Patrol:
+                zAnim.Patrol();
                 Patrol();
                 break;
             case ZombieStates.Search:
+                zAnim.Search();
                 Search();
-                //StartSearch();
                 break;
             case ZombieStates.Chase:
+                zAnim.Chase();
                 Chase();
-                //StartChase();
                 break;
             case ZombieStates.Attack:
+                zAnim.Attack();
                 Attack();
                 break;
             case ZombieStates.Stunned:
@@ -142,120 +142,136 @@ public class Zombie : MonoBehaviour {
         playerPos = pt.position;
     }
 
-    public void Attack() {
-        light.color = Color.red;
-        //animator.Play("Attack");
-    }
-
-    public void StopSearch() {
-        isSearching = false;
-        //animator.SetBool("Searching", isSearching);
-        searchTimer = 0;
-    }
-
-    public void StartSearch() {
-        isSearching = true;
-        //animator.SetBool("Searching", isSearching);
-        searchTimer = 10;
-        //animator.SetTrigger("Searching");
-        //animator.Play("Search");
-        light.color = Color.yellow;
-        //currentZombieState = Search;
-        //SetState(ZombieStates.Search);
-    }
-
-    public void Search() {
-        if(searchTimer > 0) {
-            searchTimer -= Time.deltaTime;
-            //myTransform.Rotate(0, rotationSpeed * Time.deltaTime, 0, Space.World);
-            Debug.DrawRay(ray.position, ray.forward, Color.red);
-            if(Physics.SphereCast(ray.position + characterController.center, searchRadius, ray.forward, out hit, searchDistance)) {
-                Debug.Log("Hit: " + hit.collider.name);
-                if(hit.collider.CompareTag("Player")) {
-                    foundTarget = true;
-                    StopSearch();
-                    StartChase();
-                    SetState(ZombieStates.Chase);
-                }
-            }
-        } else {
-            StopSearch();
-            foundTarget = false;
-            isPatrolling = true;
-            light.color = Color.green;
-            //currentZombieState = Patrol;
-            SetState(ZombieStates.Patrol);
-        }
-    }
-
-    public void StopChase() {
-        isChasing = false;
+    #region Patrol()
+    public void StartPatrol() {
+        isPatrolling = true;
         foundTarget = false;
-        chaseTimer = 0;
+        light.color = patrolColor;
+        SetState(ZombieStates.Patrol);
     }
 
-    public void StartChase() {
-        isChasing = true;
-        chaseTimer = 10;
-        light.color = Color.blue;
-        //animator.SetTrigger("Chasing");
-        //currentZombieState = Chase;
-    }
-
-    public void Chase() {
-        if(chaseTimer > 0) {
-            chaseTimer -= Time.deltaTime;
-            myTransform.LookAt(target);
-            //animator.SetTrigger("Patrolling");
-            //animator.Play("Patrolling");
-            myTransform.position += myTransform.forward * chaseSpeed * Time.deltaTime;
-            //myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(target.position - myTransform.position), rotationSpeed * Time.deltaTime);
-            if (distanceToTarget <= attackDistance) {
-                //StopChase();
-                //isAttacking = true;
-                //animator.SetBool("Attacking", isAttacking);
-                //currentZombieState = Attack;
-                //SetState(ZombieStates.Attack);
-            } else if(distanceToTarget >= giveUpDistance) {
-                StopChase();
-                isPatrolling = true;
-                //currentZombieState = Patrol;
-                light.color = Color.green;
-                SetState(ZombieStates.Patrol);
-            }
-        } else {
-            StopChase();
-            isPatrolling = true;
-            //currentZombieState = Patrol
-            light.color = Color.green; ;
-            SetState(ZombieStates.Patrol);
-        }
+    public void StopPatrol() {
+        isPatrolling = false;
     }
 
     public void Patrol() {
         if (nodes.Count <= 0)
             return;
 
+        StopPatrol();
         nm.destination = nodes[currentNode].position;
-        if(distanceToTarget < attackDistance) {
-            //isPatrolling = false;
-            //isAttacking = false;
-            //animator.SetBool("Attacking", isAttacking);
-            //currentZombieState = Attack;
-            //SetState(ZombieStates.Attack);
-        }
-        else if(distanceToTarget < chaseDistance) {
-            isPatrolling = false;
-            //currentZombieState = StartChase;
-            StartChase();
-            SetState(ZombieStates.Chase);
-        } else {
-            isPatrolling = false;
-            //currentZombieState = StartSearch;
-            StartSearch();
-            SetState(ZombieStates.Search);
-        }
+        StartSearch();
         currentNode = (currentNode + 1) % nodes.Count;
+    }
+    #endregion
+
+    #region Search()
+    public void StartSearch() {
+        isSearching = true;
+        searchTimer = 10;
+        light.color = searchColor;
+        SetState(ZombieStates.Search);
+    }
+
+    public void StopSearch() {
+        isSearching = false;
+        searchTimer = 0;
+    }
+
+    public void Search() {
+        if(searchTimer > 0) {
+            searchTimer -= Time.deltaTime;
+            if(Physics.Raycast(ray.position, ray.forward * searchDistance, out hit, searchDistance)) {
+                if(hit.collider.CompareTag("Player")) {
+                    StopSearch();
+                    StartChase();
+                    //if (distanceToTarget < attackDistance) {
+                    //    StopSearch();
+                    //    StartAttack();
+                    //    SetState(ZombieStates.Attack);
+                    //} else if(distanceToTarget > attackDistance && distanceToTarget < chaseDistance) {
+                    //}
+                }
+            }
+        } else {
+            StopSearch();
+            StartPatrol();
+        }
+    }
+    #endregion
+
+    #region Chase()
+    public void StartChase() {
+        foundTarget = true;
+        isChasing = true;
+        chaseTimer = 15;
+        light.color = chaseColor;
+        SetState(ZombieStates.Chase);
+    }
+
+    public void StopChase() {
+        isChasing = false;
+        chaseTimer = 0;
+    }
+
+    public void Chase() {
+        if(chaseTimer > 0) {
+            chaseTimer -= Time.deltaTime;
+            myTransform.LookAt(target);
+            nm.speed = chaseSpeed;
+            nm.destination = target.position;
+            if (distanceToTarget <= attackDistance) {
+                StopChase();
+                StartAttack();
+            } else if(distanceToTarget >= giveUpDistance) {
+                StopChase();
+                StartPatrol();
+            }
+        } else {
+            StopChase();
+            StartPatrol();
+        }
+    }
+    #endregion
+
+    #region Attack()
+    public void StartAttack() {
+        foundTarget = true;
+        isAttacking = true;
+        light.color = attackColor;
+        SetState(ZombieStates.Attack);
+    }
+
+    public void StopAttack() {
+        isAttacking = false;
+    }
+
+    public void Attack() {
+        myTransform.LookAt(target);
+        if(distanceToTarget > attackDistance && distanceToTarget < chaseDistance) {
+            StopAttack();
+            StartChase();
+        } else if(distanceToTarget > chaseDistance) {
+            StopAttack();
+            StartSearch();
+        }
+    }
+    #endregion
+
+    #region GetSetState()
+    public void SetState(ZombieStates state) {
+        previousState = currentState;
+        currentState = state;
+    }
+
+    public ZombieStates GetState() {
+        return currentState;
+    }
+    #endregion
+
+    public void OnDrawGizmos() {
+        //Gizmos.DrawSphere(ray.position, searchRadius);
+        Gizmos.DrawRay(ray.position, ray.forward);
     }
 
     public void Stunned() {
@@ -270,18 +286,5 @@ public class Zombie : MonoBehaviour {
         if(other.gameObject.CompareTag("Node")) {
             atNode = true;
         }
-    }
-
-    public void SetState(ZombieStates state) {
-        previousState = currentState;
-        currentState = state;
-    }
-
-    public ZombieStates GetState() {
-        return currentState;
-    }
-
-    public void OnDrawGizmos() {
-        Gizmos.DrawSphere(ray.position, searchRadius);
     }
 }
