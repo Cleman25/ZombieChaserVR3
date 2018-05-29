@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class Zombie : MonoBehaviour {
+    public Rigidbody rb;
     public CharacterController characterController;
     public Transform myTransform;
     public Vector3 currentPos;
@@ -16,7 +17,7 @@ public class Zombie : MonoBehaviour {
     public ZombieAnimation zAnim;
     
     [Header("Colour/Light Settings:")]
-    public Light light;
+    public Light myLight;
     public Color patrolColor = Color.green;
     public Color stunnedColor = Color.black;
     public Color attackColor = Color.red;
@@ -64,7 +65,7 @@ public class Zombie : MonoBehaviour {
 
     [Header("Attack Settings:")]
     public bool isAttacking;
-    public float attackDistance = 0.5f;
+    public float attackDistance = 2;
     public float repeatAttackTime = 1;
 
     void Awake() {
@@ -75,8 +76,8 @@ public class Zombie : MonoBehaviour {
         if(!h)
             h = GetComponent<Health>();
 
-        if (!light)
-            light = GetComponentInChildren<Light>();
+        if (!myLight)
+            myLight = GetComponentInChildren<Light>();
 
         if (!zAnim)
             zAnim = GetComponentInChildren<ZombieAnimation>();
@@ -115,7 +116,7 @@ public class Zombie : MonoBehaviour {
                 break;
             case ZombieStates.Patrol:
                 zAnim.Patrol();
-                Patrol();
+                MoveRB();
                 break;
             case ZombieStates.Search:
                 zAnim.Search();
@@ -146,7 +147,7 @@ public class Zombie : MonoBehaviour {
     public void StartPatrol() {
         isPatrolling = true;
         foundTarget = false;
-        light.color = patrolColor;
+        myLight.color = patrolColor;
         SetState(ZombieStates.Patrol);
     }
 
@@ -158,10 +159,10 @@ public class Zombie : MonoBehaviour {
         if (nodes.Count <= 0)
             return;
 
-        StopPatrol();
-        nm.destination = nodes[currentNode].position;
-        StartSearch();
+        nm.SetDestination(nodes[currentNode].position);
         currentNode = (currentNode + 1) % nodes.Count;
+        StopPatrol();
+        StartSearch();
     }
     #endregion
 
@@ -169,7 +170,7 @@ public class Zombie : MonoBehaviour {
     public void StartSearch() {
         isSearching = true;
         searchTimer = 10;
-        light.color = searchColor;
+        myLight.color = searchColor;
         SetState(ZombieStates.Search);
     }
 
@@ -179,21 +180,20 @@ public class Zombie : MonoBehaviour {
     }
 
     public void Search() {
-        if(searchTimer > 0) {
+        if(searchTimer > 0.1) {
             searchTimer -= Time.deltaTime;
             if(Physics.Raycast(ray.position, ray.forward * searchDistance, out hit, searchDistance)) {
                 if(hit.collider.CompareTag("Player")) {
-                    StopSearch();
-                    StartChase();
-                    //if (distanceToTarget < attackDistance) {
-                    //    StopSearch();
-                    //    StartAttack();
-                    //    SetState(ZombieStates.Attack);
-                    //} else if(distanceToTarget > attackDistance && distanceToTarget < chaseDistance) {
-                    //}
+                    if (distanceToTarget < attackDistance) {
+                        StopSearch();
+                        StartAttack();
+                    } else if (distanceToTarget > attackDistance && distanceToTarget < chaseDistance) {
+                        StopSearch();
+                        StartChase();
+                    }
                 }
             }
-        } else {
+        } else if (searchTimer <= 0.1) {
             StopSearch();
             StartPatrol();
         }
@@ -205,7 +205,7 @@ public class Zombie : MonoBehaviour {
         foundTarget = true;
         isChasing = true;
         chaseTimer = 15;
-        light.color = chaseColor;
+        myLight.color = chaseColor;
         SetState(ZombieStates.Chase);
     }
 
@@ -219,7 +219,7 @@ public class Zombie : MonoBehaviour {
             chaseTimer -= Time.deltaTime;
             myTransform.LookAt(target);
             nm.speed = chaseSpeed;
-            nm.destination = target.position;
+            nm.SetDestination(target.position);
             if (distanceToTarget <= attackDistance) {
                 StopChase();
                 StartAttack();
@@ -238,7 +238,7 @@ public class Zombie : MonoBehaviour {
     public void StartAttack() {
         foundTarget = true;
         isAttacking = true;
-        light.color = attackColor;
+        myLight.color = attackColor;
         SetState(ZombieStates.Attack);
     }
 
@@ -269,11 +269,6 @@ public class Zombie : MonoBehaviour {
     }
     #endregion
 
-    public void OnDrawGizmos() {
-        //Gizmos.DrawSphere(ray.position, searchRadius);
-        Gizmos.DrawRay(ray.position, ray.forward);
-    }
-
     public void Stunned() {
 
     }
@@ -282,9 +277,55 @@ public class Zombie : MonoBehaviour {
         SetState(ZombieStates.Dead);
     }
 
-    void OnTriggerEnter(Collider other) {
+    void OnTriggerEnter (Collider other) {
         if(other.gameObject.CompareTag("Node")) {
             atNode = true;
         }
+        if(other.gameObject.CompareTag("Player")) {
+            other.gameObject.GetComponent<Health>().TakeDamage(5);
+        }
+    }
+
+    void OnCollisionEnter (Collision other) {
+        if(other.gameObject.CompareTag("Node")) {
+            atNode = true;
+        }
+        if(other.gameObject.CompareTag("Player")) {
+            other.gameObject.GetComponent<Health>().TakeDamage(5);
+        }
+    }
+
+    public void MoveRB() {
+        nm.updatePosition = false;
+        nm.updateRotation = false;
+        nm.nextPosition = nodes[currentNode].position;
+        currentNode = (currentNode + 1) % nodes.Count;
+        Vector3 velocity = nm.desiredVelocity;
+        rb.velocity = velocity;
+    }
+
+    void OnDrawGizmos() {
+        var nav = GetComponent<NavMeshAgent>();
+        if (nav == null || nav.path == null)
+            return;
+
+        var line = this.GetComponent<LineRenderer>();
+        if (line == null) {
+            line = this.gameObject.AddComponent<LineRenderer>();
+            line.material = new Material(Shader.Find("Sprites/Default")) { color = Color.yellow };
+            line.startWidth = 0.5f;
+            line.endWidth = 0.5f;
+            line.startColor = Color.yellow;
+            line.endColor = Color.yellow;
+        }
+
+        var path = nav.path;
+
+        line.positionCount =  path.corners.Length;
+
+        for (int i = 0; i < path.corners.Length; i++) {
+            line.SetPosition(i, path.corners[i]);
+        }
+
     }
 }

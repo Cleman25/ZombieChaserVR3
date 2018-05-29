@@ -98,7 +98,7 @@ public class Autowalk : MonoBehaviour {
 
         //if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began && walkWhenTapped) {
         //    isWalking = !isWalking;
-            Debug.Log("Screen tapped");
+            //Debug.Log("Screen tapped");
         //}
 
         if (Input.GetMouseButtonDown(0) && walkWhenTapped) {

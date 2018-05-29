@@ -129,10 +129,8 @@ public class Hud : MonoBehaviour {
     public float CalculateHealth() {
         float health = getHealth();
         float percentHealth = (health * 100) / maxHealth;
-        Log<float>(percentHealth);
-        healthText.text = percentHealth.ToString();
         float width = (percentHealth * healthBarBg.sizeDelta.x) / 100;
-        Log<string>("Health calculated");
+        healthText.text = percentHealth.ToString();
         return width;
     }
 
