@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Autowalk : MonoBehaviour {
     private const int RIGHT_ANGLE = 90;
-
+    public PlayerAnimation pAnim;
     // This variable determinates if the player will move or not 
     public bool isWalking = false;
 
@@ -37,9 +37,13 @@ public class Autowalk : MonoBehaviour {
     void Start() {
         mainCamera = Camera.main.transform;
         speed = GetComponent<Character>().speed;
+        pAnim = GetComponentInChildren<PlayerAnimation>();
     }
 
-    void Update() {
+    void FixedUpdate() {
+        if(!pAnim) {
+            pAnim = GetComponentInChildren<PlayerAnimation>();
+        }
         speed = GetComponent<Character>().speed;
         // Walk when the Cardboard Trigger is used 
         if (walkWhenTriggered && !walkWhenLookDown && !walkWhenTapped && !isWalking) {
@@ -71,11 +75,13 @@ public class Autowalk : MonoBehaviour {
         }
 
         if (isWalking) {
+            pAnim.Move();
             GetComponent<Character>().isRunning = true;
-            Vector3 direction = new Vector3(mainCamera.transform.forward.x, 0, mainCamera.transform.forward.z).normalized * speed * Time.deltaTime;
+            Vector3 direction = new Vector3(mainCamera.transform.forward.x, 0, mainCamera.transform.forward.z).normalized * speed * Time.fixedDeltaTime;
             Quaternion rotation = Quaternion.Euler(new Vector3(0, -transform.rotation.eulerAngles.y, 0));
             transform.Translate(rotation * direction);
         } else {
+            pAnim.Idle();
             GetComponent<Character>().isRunning = false;
         }
 
