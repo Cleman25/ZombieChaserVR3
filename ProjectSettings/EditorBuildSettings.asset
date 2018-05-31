@@ -5,6 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Level.unity
     guid: 065dc66dbb03e934b8f020e65134c04d
+  - enabled: 1
+    path: Assets/Scenes/LevelVR.unity
+    guid: 0c2251592b927c74c8018893285f13dd
