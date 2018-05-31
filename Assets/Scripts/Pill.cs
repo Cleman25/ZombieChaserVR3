@@ -6,7 +6,8 @@ public class Pill : MonoBehaviour {
     public enum PillType {
         Health,
         Stamina,
-        Speed
+        Speed,
+        Coin
     }
     public Light myLight;
     public float intensity;
@@ -22,13 +23,24 @@ public class Pill : MonoBehaviour {
 		if(worth <= 0) {
             switch(pillType) {
                 case PillType.Health:
-                    worth = 10f;
+                    if(worth <= 0) {
+                        worth = 10f;
+                    }
                     break;
                 case PillType.Stamina:
-                    worth = 10f;
+                    if(worth <= 0) {
+                        worth = 10f;
+                    }
                     break;
                 case PillType.Speed:
-                    worth = 2f;
+                    if(worth <= 0) {
+                        worth = 2f;
+                    }
+                    break;
+                case PillType.Coin:
+                    if(worth <= 0) {
+                        worth = 100f;
+                    }
                     break;
             }
         }
@@ -58,6 +70,11 @@ public class Pill : MonoBehaviour {
                 case PillType.Speed:
                     col.gameObject.GetComponent<Character>().defaultSpeed *= worth;
                     Debug.Log("Your speed has increased " + worth + " fold from the " + pillType + " pill");
+                    break;
+                case PillType.Coin:
+                    GameManager.instance.coins++;
+                    GameManager.instance.wallet += worth;
+                    Debug.Log("You picked up a coin! You have " + worth + " extra credits in your wallet.");
                     break;
             }
             Destroy(gameObject);

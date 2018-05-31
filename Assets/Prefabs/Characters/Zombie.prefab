@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 143747735029542044}
   - component: {fileID: 54232665443262670}
   - component: {fileID: 65695894945558856}
-  - component: {fileID: 120932542469874614}
+  - component: {fileID: 120856989172088660}
   m_Layer: 0
   m_Name: Zombie
   m_TagString: Zombie
@@ -486,7 +486,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1066584440664164}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 91.719, y: 61.1, z: 304.178}
+  m_LocalPosition: {x: 91.719, y: 61.1, z: 301.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4151400040109158}
@@ -1300,7 +1300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
---- !u!120 &120932542469874614
+--- !u!120 &120856989172088660
 LineRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1569,7 +1569,7 @@ NavMeshAgent:
   m_Radius: 0.5
   m_Speed: 3.5
   m_Acceleration: 8
-  avoidancePriority: 50
+  avoidancePriority: 0
   m_AngularSpeed: 120
   m_StoppingDistance: 3
   m_AutoTraverseOffMeshLink: 1
