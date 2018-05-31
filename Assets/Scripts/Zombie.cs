@@ -116,7 +116,7 @@ public class Zombie : MonoBehaviour {
                 break;
             case ZombieStates.Patrol:
                 zAnim.Patrol();
-                MoveRB();
+                Patrol();
                 break;
             case ZombieStates.Search:
                 zAnim.Search();
@@ -159,10 +159,10 @@ public class Zombie : MonoBehaviour {
         if (nodes.Count <= 0)
             return;
 
-        nm.SetDestination(nodes[currentNode].position);
-        currentNode = (currentNode + 1) % nodes.Count;
         StopPatrol();
+        nm.SetDestination(nodes[currentNode].position);
         StartSearch();
+        currentNode = (currentNode + 1) % nodes.Count;
     }
     #endregion
 
@@ -277,14 +277,14 @@ public class Zombie : MonoBehaviour {
         SetState(ZombieStates.Dead);
     }
 
-    void OnTriggerEnter (Collider other) {
-        if(other.gameObject.CompareTag("Node")) {
-            atNode = true;
-        }
-        if(other.gameObject.CompareTag("Player")) {
-            other.gameObject.GetComponent<Health>().TakeDamage(5);
-        }
-    }
+    //void OnTriggerEnter (Collider other) {
+    //    if(other.gameObject.CompareTag("Node")) {
+    //        atNode = true;
+    //    }
+    //    if(other.gameObject.CompareTag("Player")) {
+    //        other.gameObject.GetComponent<Health>().TakeDamage(5);
+    //    }
+    //}
 
     void OnCollisionEnter (Collision other) {
         if(other.gameObject.CompareTag("Node")) {
@@ -295,37 +295,37 @@ public class Zombie : MonoBehaviour {
         }
     }
 
-    public void MoveRB() {
-        nm.updatePosition = false;
-        nm.updateRotation = false;
-        nm.nextPosition = nodes[currentNode].position;
-        currentNode = (currentNode + 1) % nodes.Count;
-        Vector3 velocity = nm.desiredVelocity;
-        rb.velocity = velocity;
-    }
+    //public void MoveRB() {
+    //    nm.updatePosition = false;
+    //    nm.updateRotation = false;
+    //    nm.nextPosition = nodes[currentNode].position;
+    //    currentNode = (currentNode + 1) % nodes.Count;
+    //    Vector3 velocity = nm.desiredVelocity;
+    //    rb.velocity = velocity;
+    //}
 
-    void OnDrawGizmos() {
-        var nav = GetComponent<NavMeshAgent>();
-        if (nav == null || nav.path == null)
-            return;
+    //void OnDrawGizmos() {
+    //    var nav = GetComponent<NavMeshAgent>();
+    //    if (nav == null || nav.path == null)
+    //        return;
 
-        var line = this.GetComponent<LineRenderer>();
-        if (line == null) {
-            line = this.gameObject.AddComponent<LineRenderer>();
-            line.material = new Material(Shader.Find("Sprites/Default")) { color = Color.yellow };
-            line.startWidth = 0.5f;
-            line.endWidth = 0.5f;
-            line.startColor = Color.yellow;
-            line.endColor = Color.yellow;
-        }
+    //    var line = this.GetComponent<LineRenderer>();
+    //    if (line == null) {
+    //        line = this.gameObject.AddComponent<LineRenderer>();
+    //        line.material = new Material(Shader.Find("Sprites/Default")) { color = Color.yellow };
+    //        line.startWidth = 0.5f;
+    //        line.endWidth = 0.5f;
+    //        line.startColor = Color.yellow;
+    //        line.endColor = Color.yellow;
+    //    }
 
-        var path = nav.path;
+    //    var path = nav.path;
 
-        line.positionCount =  path.corners.Length;
+    //    line.positionCount =  path.corners.Length;
 
-        for (int i = 0; i < path.corners.Length; i++) {
-            line.SetPosition(i, path.corners[i]);
-        }
+    //    for (int i = 0; i < path.corners.Length; i++) {
+    //        line.SetPosition(i, path.corners[i]);
+    //    }
 
-    }
+    //}
 }
