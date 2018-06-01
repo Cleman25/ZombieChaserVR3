@@ -19,6 +19,7 @@ public class Spawner : MonoBehaviour {
     public List<GameObject>items;
     public int lastSpawnedIndex = 0;
     public GameObject selected;
+    public bool useCycle;
 
     public bool useWave;
     public int waveCount;
@@ -66,12 +67,16 @@ public class Spawner : MonoBehaviour {
     }
 
     public GameObject ItemCycle() {
-        for(int i = 0; i < items.Count; i++) {
-            lastSpawnedIndex = i;
-            if(lastSpawnedIndex == i) {
-                lastSpawnedIndex++;
-                selected = items[i];
+        if (useCycle) {
+            for(int i = 0; i < items.Count; i++) {
+                lastSpawnedIndex = i;
+                if(lastSpawnedIndex == i) {
+                    lastSpawnedIndex++;
+                    selected = items[i];
+                }
             }
+        } else {
+            selected = items[0];
         }
         return selected;
     }
