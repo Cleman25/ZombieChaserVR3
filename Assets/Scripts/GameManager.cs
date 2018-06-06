@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
     public float coins;
     public float wallet;
     static GameManager _instance = null;
+    public 
 	// Use this for initialization
 	void Awake () {
         if(instance) {
@@ -27,4 +30,6 @@ public class GameManager : MonoBehaviour {
         get { return _instance; }
         set { _instance = value; }
     }
+
+
 }

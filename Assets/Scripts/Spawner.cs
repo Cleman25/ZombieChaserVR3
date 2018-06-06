@@ -35,7 +35,7 @@ public class Spawner : MonoBehaviour {
             spawnTimer += Time.deltaTime;
             if(spawnTimer > waitTime) {
                 if(spawnCount < spawnLimit) {
-                    Spawn();
+                    StartCoroutine(Spawn());
                     spawnTimer = 0;
                 } else {
                     startSpawn = false;
@@ -44,7 +44,7 @@ public class Spawner : MonoBehaviour {
         }
 	}
 
-    public void Spawn() {
+    public IEnumerator Spawn() {
         float directionFacing = Random.Range(0f, 360f);
 
         // need to pick a random position around originPoint but inside spawnRadius
@@ -52,6 +52,8 @@ public class Spawner : MonoBehaviour {
         Vector3 point = (Random.insideUnitSphere * spawnRadius) + originPoint;
         point.y = maxPos.y;
         Instantiate(ItemCycle(), point, Quaternion.Euler(new Vector3(0f, directionFacing, 0f)));
+        spawnCount++;
+        yield return null;
     }
 
     public void Wave() {
