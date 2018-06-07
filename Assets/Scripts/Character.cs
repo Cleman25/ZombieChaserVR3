@@ -6,6 +6,7 @@ public class Character : MonoBehaviour {
     public float currentStamina;
     public float speed;
     public float defaultSpeed = 5;
+    public float originalSpeed;
     public float maxStamina = 100;
     private float staminaRegenTimer = 0.0f;
 
@@ -13,9 +14,11 @@ public class Character : MonoBehaviour {
     private const float staminaIncreasePerFrame = 5.0f;
     private const float staminaTimeToRegen = 1.0f;
     public bool isRunning;
+    public float pillTimer;
     // Use this for initialization
     void Start () {
         currentStamina = maxStamina;
+        originalSpeed = defaultSpeed;
         if(speed <= 0)
             speed = defaultSpeed;
 	}
@@ -37,6 +40,14 @@ public class Character : MonoBehaviour {
             speed = defaultSpeed/2;
         } else {
             speed = defaultSpeed;
+        }
+
+        if(speed >= 14 && isRunning) {
+            pillTimer -= Time.deltaTime;
+            if(pillTimer <= 0) {
+                pillTimer = 0;
+                defaultSpeed = originalSpeed;
+            }
         }
     }
 }

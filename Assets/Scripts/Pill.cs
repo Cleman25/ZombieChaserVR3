@@ -14,7 +14,6 @@ public class Pill : MonoBehaviour {
     public float worth;
     public AudioClip clip;
     public AudioSource source;
-
     public PillType pillType;
 
 
@@ -60,24 +59,35 @@ public class Pill : MonoBehaviour {
         if(col.gameObject.CompareTag("Player")) {
             switch(pillType) {
                 case PillType.Health:
-                    col.gameObject.GetComponent<Health>().currentHealth += worth;
-                    Debug.Log("You regained " + worth + " health from the " + pillType + " pill");
+                    if(col.gameObject.GetComponent<Health>().currentHealth <= 90) {
+                        col.gameObject.GetComponent<Health>().currentHealth += worth;
+                        Debug.Log("You regained " + worth + " health from the " + pillType + " pill");
+                        Destroy(gameObject);
+                    }
                     break;
                 case PillType.Stamina:
-                    col.gameObject.GetComponent<Character>().currentStamina += worth;
-                    Debug.Log("You regained " + worth + " stamina from the " + pillType + " pill");
+                    if(col.gameObject.GetComponent<Character>().currentStamina <= 90) {
+                        col.gameObject.GetComponent<Character>().currentStamina += worth;
+                        Debug.Log("You regained " + worth + " stamina from the " + pillType + " pill");
+                        Destroy(gameObject);
+                    }
                     break;
                 case PillType.Speed:
                     col.gameObject.GetComponent<Character>().defaultSpeed *= worth;
+                    col.gameObject.GetComponent<Character>().pillTimer = 10;
+                    if (col.gameObject.GetComponent<Character>().defaultSpeed > 14) {
+                        col.gameObject.GetComponent<Character>().defaultSpeed = 14;
+                    }
                     Debug.Log("Your speed has increased " + worth + " fold from the " + pillType + " pill");
+                    Destroy(gameObject);
                     break;
                 case PillType.Coin:
                     GameManager.instance.coins++;
                     GameManager.instance.wallet += worth;
                     Debug.Log("You picked up a coin! You have " + worth + " extra credits in your wallet.");
+                    Destroy(gameObject);
                     break;
             }
-            Destroy(gameObject);
         }
     }
 }

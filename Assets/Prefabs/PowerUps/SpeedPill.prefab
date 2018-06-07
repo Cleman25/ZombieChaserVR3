@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 23866916005727184}
   - component: {fileID: 114695771227033146}
   m_Layer: 0
-  m_Name: SpeedBill
+  m_Name: SpeedPill
   m_TagString: Pill
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
