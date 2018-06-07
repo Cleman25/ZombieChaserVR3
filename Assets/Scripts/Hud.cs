@@ -41,6 +41,9 @@ public class Hud : MonoBehaviour {
     static float currentHealth;
     public float healthSpeed = 1;
 
+    [Header("Wallet Settings:")]
+    public Text balance;
+
     [Header("StaminaBar Settings:")]
     [Tooltip("Staminabar Foreground.")]
     public RectTransform staminaBar;
@@ -65,6 +68,10 @@ public class Hud : MonoBehaviour {
             timer = GameObject.Find("timer").GetComponent<Text>();
             timer.gameObject.SetActive(true);
         }
+        if(!balance) {
+            balance = GameObject.Find("Balance").GetComponent<Text>();
+            balance.gameObject.SetActive(true);
+        }
         if(!healthText) {
             healthText = GameObject.Find("health").GetComponent<Text>();
         }
@@ -82,6 +89,7 @@ public class Hud : MonoBehaviour {
             pauseTime = false;
         }
         currentTime = (minutes * 60) + seconds;
+        balance.text = "" + GameManager.instance.wallet;
     }
 
     public void TakeDamage() {

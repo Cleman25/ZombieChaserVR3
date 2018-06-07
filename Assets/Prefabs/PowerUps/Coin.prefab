@@ -58,6 +58,7 @@ GameObject:
   - component: {fileID: 23948870968411438}
   - component: {fileID: 114670389149901494}
   - component: {fileID: 82405097664511788}
+  - component: {fileID: 95696784696267636}
   m_Layer: 0
   m_Name: Coin
   m_TagString: Pill
@@ -146,7 +147,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1722581634807050}
   m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: -2.88, y: 1, z: 0}
+  m_LocalPosition: {x: -145.26768, y: 11.27, z: 66.50412}
   m_LocalScale: {x: 1, y: 0.05, z: 1}
   m_Children:
   - {fileID: 4535301030922102}
@@ -372,6 +373,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!95 &95696784696267636
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1722581634807050}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7e672ecc0137257449b7a99db9640e7e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!108 &108219719077375000
 Light:
   m_ObjectHideFlags: 1
@@ -425,6 +443,8 @@ MonoBehaviour:
   clip: {fileID: 0}
   source: {fileID: 82405097664511788}
   pillType: 3
+  hud: {fileID: 0}
+  spawners: []
 --- !u!135 &135262110531568860
 SphereCollider:
   m_ObjectHideFlags: 1
