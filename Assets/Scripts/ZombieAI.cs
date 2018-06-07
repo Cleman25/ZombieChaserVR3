@@ -60,6 +60,52 @@ public class ZombieAI : MonoBehaviour {
             playerLastPos = target.position;
             SetPlayerPos(target);
         }
+        FindNodes();
+        nm = GetComponent<NavMeshAgent>();
+        SetState(ZombieStates.Patrol);
+	}
+	
+	void Update () {
+        FindNodes();
+        distanceToTarget = (target.position - myTransform.position).magnitude;
+        if(nodes.Count > 0) {
+            if(distanceToTarget < chaseDistance) {
+            //    if(!isChasing) {
+            //        chaseTimer = 10;
+            //    }
+                SetState(ZombieStates.Chase);
+            } else {
+                SetState(ZombieStates.Search);
+            }
+            switch(currentState) {
+                case ZombieStates.Idle:
+                    if(!nm.pathPending && nm.remainingDistance < 0.5f) {
+                        SetState(ZombieStates.Patrol);
+                    }
+                    break;
+                case ZombieStates.Patrol:
+                    GoToDestination();
+                    break;
+                case ZombieStates.Search:
+                    searchTimer = 4;
+                    Search();
+                    break;
+                case ZombieStates.Chase:
+                    chaseTimer = 10;
+                    Chase();
+                    break;
+                case ZombieStates.Attack:
+                    Attack();
+                    break;
+                case ZombieStates.Stunned:
+                    break;
+                case ZombieStates.Dead:
+                    break;
+            }
+        }
+	}
+
+    public void FindNodes() {
         GameObject[] pnodes = GameObject.FindGameObjectsWithTag("Node");
         if(pnodes.Length > 0) {
             for (int i = 0; i < pnodes.Length; i++) {
@@ -67,46 +113,7 @@ public class ZombieAI : MonoBehaviour {
             }
             Debug.Log("There are " + nodes.Count + " patrol node in the scene.");
         }
-        nm = GetComponent<NavMeshAgent>();
-        SetState(ZombieStates.Patrol);
-	}
-	
-	void Update () {
-        distanceToTarget = (target.position - myTransform.position).magnitude;
-        if(distanceToTarget < chaseDistance) {
-        //    if(!isChasing) {
-        //        chaseTimer = 10;
-        //    }
-            SetState(ZombieStates.Chase);
-        } else {
-            SetState(ZombieStates.Search);
-        }
-        switch(currentState) {
-            case ZombieStates.Idle:
-                if(!nm.pathPending && nm.remainingDistance < 0.5f) {
-                    SetState(ZombieStates.Patrol);
-                }
-                break;
-            case ZombieStates.Patrol:
-                GoToDestination();
-                break;
-            case ZombieStates.Search:
-                searchTimer = 4;
-                Search();
-                break;
-            case ZombieStates.Chase:
-                chaseTimer = 10;
-                Chase();
-                break;
-            case ZombieStates.Attack:
-                Attack();
-                break;
-            case ZombieStates.Stunned:
-                break;
-            case ZombieStates.Dead:
-                break;
-        }
-	}
+    }
 
     public void SetState(ZombieStates state) {
         previousState = currentState;

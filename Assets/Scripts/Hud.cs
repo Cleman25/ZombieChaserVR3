@@ -39,6 +39,7 @@ public class Hud : MonoBehaviour {
     [SerializeField]
     [Tooltip("Player's current health.")]
     static float currentHealth;
+    public float healthSpeed = 1;
 
     [Header("StaminaBar Settings:")]
     [Tooltip("Staminabar Foreground.")]
@@ -67,11 +68,12 @@ public class Hud : MonoBehaviour {
         if(!healthText) {
             healthText = GameObject.Find("health").GetComponent<Text>();
         }
+        currentTime = 0;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        fixHealthBar();
+        StartCoroutine(FixHealthBar());
         fixStaminaBar();
         SetTimer();
         if (Time.timeScale == 0) {
@@ -84,7 +86,7 @@ public class Hud : MonoBehaviour {
 
     public void TakeDamage() {
         //startFlash = true;
-        fixHealthBar();
+        StartCoroutine(FixHealthBar());
         Log<string>("You've been hurt.");
     }
 
@@ -121,9 +123,24 @@ public class Hud : MonoBehaviour {
         }
     }
 
-    public void fixHealthBar() {
+    public void OldFixHealthBar() {
+        float health = currentHealth;
         float newHealth = CalculateHealth();
-        healthBar.sizeDelta = new Vector3(newHealth, healthBarBg.sizeDelta.y);
+        float value = Mathf.Lerp(health, newHealth, Time.deltaTime * healthSpeed);
+        healthBar.sizeDelta = new Vector3(value, healthBarBg.sizeDelta.y);
+    }
+
+    public IEnumerator FixHealthBar() {
+        float health = currentHealth;
+        float newHealth = CalculateHealth();
+        float t = 0;
+        while(t < 1) {
+            t += Time.deltaTime * healthSpeed;
+            //float value = Mathf.Lerp(health, newHealth, t);
+            healthBar.sizeDelta = new Vector3(Mathf.Lerp(health, newHealth, t), healthBarBg.sizeDelta.y);
+            yield return null;
+        }
+        yield return null;
     }
 
     public float CalculateHealth() {

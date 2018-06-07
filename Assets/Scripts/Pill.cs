@@ -15,7 +15,8 @@ public class Pill : MonoBehaviour {
     public AudioClip clip;
     public AudioSource source;
     public PillType pillType;
-
+    public Hud hud;
+    public Spawner[] spawners;
 
 	// Use this for initialization
 	void Start () {
@@ -46,6 +47,7 @@ public class Pill : MonoBehaviour {
         if(intensity <= 0) {
             intensity = 1000f;
         }
+        hud = GameObject.FindObjectOfType<Hud>();
         myLight = GetComponentInChildren<Light>();
 	}
 	
@@ -57,37 +59,57 @@ public class Pill : MonoBehaviour {
 
     void OnTriggerEnter (Collider col) {
         if(col.gameObject.CompareTag("Player")) {
+            Character character = col.gameObject.GetComponent<Character>();
+            Health health = col.gameObject.GetComponent<Health>();
             switch(pillType) {
                 case PillType.Health:
-                    if(col.gameObject.GetComponent<Health>().currentHealth <= 90) {
-                        col.gameObject.GetComponent<Health>().currentHealth += worth;
+                    if(health.currentHealth <= 100) {
+                        health.currentHealth += worth;
+                        if (health.currentHealth > 100) {
+                            health.currentHealth = 100;
+                        }
+                        StartCoroutine(hud.FixHealthBar());
                         Debug.Log("You regained " + worth + " health from the " + pillType + " pill");
+                        Respawn();
                         Destroy(gameObject);
                     }
                     break;
                 case PillType.Stamina:
-                    if(col.gameObject.GetComponent<Character>().currentStamina <= 90) {
-                        col.gameObject.GetComponent<Character>().currentStamina += worth;
+                    if(character.currentStamina <= 100) {
+                        character.currentStamina += worth;
+                        if (character.currentStamina > 100) {
+                            character.currentStamina = 100;
+                        }
+                        StartCoroutine(hud.FixHealthBar());
                         Debug.Log("You regained " + worth + " stamina from the " + pillType + " pill");
+                        Respawn();
                         Destroy(gameObject);
                     }
                     break;
                 case PillType.Speed:
-                    col.gameObject.GetComponent<Character>().defaultSpeed *= worth;
-                    col.gameObject.GetComponent<Character>().pillTimer = 10;
-                    if (col.gameObject.GetComponent<Character>().defaultSpeed > 14) {
-                        col.gameObject.GetComponent<Character>().defaultSpeed = 14;
+                    character.defaultSpeed *= worth;
+                    character.pillTimer = 10;
+                    if (character.defaultSpeed > 14) {
+                        character.defaultSpeed = 14;
                     }
                     Debug.Log("Your speed has increased " + worth + " fold from the " + pillType + " pill");
+                    Respawn();
                     Destroy(gameObject);
                     break;
                 case PillType.Coin:
                     GameManager.instance.coins++;
                     GameManager.instance.wallet += worth;
                     Debug.Log("You picked up a coin! You have " + worth + " extra credits in your wallet.");
+                    Respawn();
                     Destroy(gameObject);
                     break;
             }
+        }
+    }
+
+    public void Respawn() {
+        for(int i = 0; i < spawners.Length; i++) {
+            spawners[i].SpawnMore();
         }
     }
 }

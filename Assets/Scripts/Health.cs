@@ -15,8 +15,7 @@ public class Health : MonoBehaviour {
 	void Update () {
 		if(currentHealth >= maxHealth) {
             currentHealth = maxHealth;
-        }
-        if (currentHealth <= minHealth) {
+        } else if (currentHealth <= minHealth) {
             currentHealth = minHealth;
         }
     }

@@ -122,7 +122,7 @@ public class wbTexturing
 
     public void OnGUI()
     {
-        texture = EditorGUILayout.ObjectField("Texture", texture, typeof(Texture2D)) as Texture2D;
+        texture = EditorGUILayout.ObjectField("Texture", texture, typeof(Texture2D), true) as Texture2D;
         tilesize = EditorGUILayout.Vector2Field("Tilesize", tilesize);
 
         index = EditorGUILayout.Popup(index, options);

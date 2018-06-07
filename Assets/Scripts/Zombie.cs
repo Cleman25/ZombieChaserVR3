@@ -10,10 +10,10 @@ public class Zombie : MonoBehaviour {
     public Transform myTransform;
     public Vector3 currentPos;
     public NavMeshAgent nm;
-    public Health h;
-    public bool isStunned;
-    public bool isDead;
-    public bool atNode;
+    public Health health;
+    public bool isStunned = false;
+    public bool isDead = false;
+    public bool atNode = false;
     public ZombieAnimation zAnim;
     
     [Header("Colour/Light Settings:")]
@@ -35,25 +35,25 @@ public class Zombie : MonoBehaviour {
     public List<Transform> nodes;
 
     [Header("Target Settings:")]
-    public bool foundTarget;
+    public bool foundTarget = false;
     public Transform target;
     public Vector3 playerLastPos;
     public Vector3 playerPos;
     public float distanceToTarget;
 
     [Header("Patrol Settings:")]
-    public bool isPatrolling;
+    public bool isPatrolling = false;
     public float patrolSpeed = 7;
 
     [Header("Chase Settings:")]
-    public bool isChasing;
+    public bool isChasing = false;
     public float chaseSpeed = 7;
     public float giveUpDistance = 30;
     public float chaseDistance = 20;
     public float chaseTimer = 15;
 
     [Header("Search Settings:")]
-    public bool isSearching;
+    public bool isSearching = false;
     public float searchTimer = 10;
     public float searchDistance = 50;
     public float searchRadius = 50;
@@ -64,23 +64,33 @@ public class Zombie : MonoBehaviour {
     public RaycastHit hit;
 
     [Header("Attack Settings:")]
-    public bool isAttacking;
+    public bool isAttacking = false;
     public float attackDistance = 2;
     public float repeatAttackTime = 1;
 
     void Awake() {
         myTransform = transform;
-        if(!characterController)
+
+        if (!nm) {
+            nm = GetComponent<NavMeshAgent>();
+        }
+
+        if(!characterController) {
             characterController = GetComponent<CharacterController>();
+        }
 
-        if(!h)
-            h = GetComponent<Health>();
+        if(!health) {
+            health = GetComponent<Health>();
+        }
 
-        if (!myLight)
+        if (!myLight) {
             myLight = GetComponentInChildren<Light>();
+        }
 
-        if (!zAnim)
+        if (!zAnim) {
             zAnim = GetComponentInChildren<ZombieAnimation>();
+        }
+        SetState(ZombieStates.Patrol);
     }
 
     void Start () {
@@ -89,53 +99,59 @@ public class Zombie : MonoBehaviour {
             playerLastPos = target.position;
             SetPlayerPos(target);
         }
+        FindNodes();
+        
+        if(nodes.Count > 0) {
+            currentNode = Random.Range(0, nodes.Count);
+        }
+    }
+	
+	void Update () {
+        FindNodes();
+        Debug.DrawRay(ray.position, ray.forward, Color.red);
+        distanceToTarget = (target.position - myTransform.position).magnitude;
+        if (nodes.Count > 0) {
+            currentPos = transform.position;
+            switch (currentState) {
+                case ZombieStates.Idle:
+                    zAnim.Idle();
+                    if (!nm.pathPending && nm.remainingDistance < 0.5f) {
+                        SetState(ZombieStates.Patrol);
+                    }
+                    break;
+                case ZombieStates.Patrol:
+                    zAnim.Patrol();
+                    Patrol();
+                    break;
+                case ZombieStates.Search:
+                    zAnim.Search();
+                    Search();
+                    break;
+                case ZombieStates.Chase:
+                    zAnim.Chase();
+                    Chase();
+                    break;
+                case ZombieStates.Attack:
+                    zAnim.Attack();
+                    Attack();
+                    break;
+                case ZombieStates.Stunned:
+                    break;
+                case ZombieStates.Dead:
+                    break;
+            }
+        }
+        
+    }
+
+    public void FindNodes() {
+        nodes = new List<Transform>();
         GameObject[] pnodes = GameObject.FindGameObjectsWithTag("Node");
         if(pnodes.Length > 0) {
             for (int i = 0; i < pnodes.Length; i++) {
                 nodes.Add(pnodes[i].transform);
             }
-            Debug.Log("There are " + nodes.Count + " patrol node in the scene.");
         }
-        if(!nm)
-            nm = GetComponent<NavMeshAgent>();
-
-        currentNode = Random.Range(0, nodes.Count);
-        SetState(ZombieStates.Patrol);
-    }
-	
-	void Update () {
-        Debug.DrawRay(ray.position, ray.forward, Color.red);
-        distanceToTarget = (target.position - myTransform.position).magnitude;
-        currentPos = transform.position;
-        switch(currentState) {
-            case ZombieStates.Idle:
-                zAnim.Idle();
-                if(!nm.pathPending && nm.remainingDistance < 0.5f) {
-                    SetState(ZombieStates.Patrol);
-                }
-                break;
-            case ZombieStates.Patrol:
-                zAnim.Patrol();
-                Patrol();
-                break;
-            case ZombieStates.Search:
-                zAnim.Search();
-                Search();
-                break;
-            case ZombieStates.Chase:
-                zAnim.Chase();
-                Chase();
-                break;
-            case ZombieStates.Attack:
-                zAnim.Attack();
-                Attack();
-                break;
-            case ZombieStates.Stunned:
-                break;
-            case ZombieStates.Dead:
-                break;
-        }
-        
     }
 
     public void SetPlayerPos(Transform pt) {
@@ -143,7 +159,7 @@ public class Zombie : MonoBehaviour {
         playerPos = pt.position;
     }
 
-    #region Patrol()
+    #region Patrol
     public void StartPatrol() {
         isPatrolling = true;
         foundTarget = false;
@@ -166,7 +182,7 @@ public class Zombie : MonoBehaviour {
     }
     #endregion
 
-    #region Search()
+    #region Search
     public void StartSearch() {
         isSearching = true;
         searchTimer = 10;
@@ -200,7 +216,7 @@ public class Zombie : MonoBehaviour {
     }
     #endregion
 
-    #region Chase()
+    #region Chase
     public void StartChase() {
         foundTarget = true;
         isChasing = true;
@@ -227,14 +243,14 @@ public class Zombie : MonoBehaviour {
                 StopChase();
                 StartPatrol();
             }
-        } else {
+        } else if(chaseTimer <= 0) {
             StopChase();
             StartPatrol();
         }
     }
     #endregion
 
-    #region Attack()
+    #region Attack
     public void StartAttack() {
         foundTarget = true;
         isAttacking = true;
@@ -258,7 +274,7 @@ public class Zombie : MonoBehaviour {
     }
     #endregion
 
-    #region GetSetState()
+    #region GetSetState
     public void SetState(ZombieStates state) {
         previousState = currentState;
         currentState = state;
@@ -294,15 +310,6 @@ public class Zombie : MonoBehaviour {
             other.gameObject.GetComponent<Health>().TakeDamage(5);
         }
     }
-
-    //public void MoveRB() {
-    //    nm.updatePosition = false;
-    //    nm.updateRotation = false;
-    //    nm.nextPosition = nodes[currentNode].position;
-    //    currentNode = (currentNode + 1) % nodes.Count;
-    //    Vector3 velocity = nm.desiredVelocity;
-    //    rb.velocity = velocity;
-    //}
 
     //void OnDrawGizmos() {
     //    var nav = GetComponent<NavMeshAgent>();

@@ -7,6 +7,7 @@ public class Spawner : MonoBehaviour {
     public float spawnTimer = 10;
     public int spawnCount = 0;
     public bool startSpawn;
+    public bool doneSpawning;
     public float itemsSpawned;
     public float waitTime = 1;
 
@@ -19,6 +20,8 @@ public class Spawner : MonoBehaviour {
     public List<GameObject>items;
     public int lastSpawnedIndex = 0;
     public GameObject selected;
+    public GameObject[] leftOver;
+    public float itemsRemaining;
     public bool useCycle;
 
     public bool useWave;
@@ -41,10 +44,27 @@ public class Spawner : MonoBehaviour {
                     spawnTimer = 0;
                 } else {
                     startSpawn = false;
+                    doneSpawning = true;
                 }
             }
         }
 	}
+
+    public void CountRemaining() {
+        for(int i = 0; i < items.Count; i++) {
+            leftOver[i] = GameObject.FindGameObjectWithTag(items[i].tag);
+        }
+        itemsRemaining = leftOver.Length;
+    }
+
+    public void SpawnMore() {
+        CountRemaining();
+        if(itemsRemaining < spawnLimit && doneSpawning) {
+            doneSpawning = false;
+            startSpawn = true;
+        }
+        Debug.Log("Respawned an item.");
+    }
 
     public IEnumerator Spawn() {
         //float directionFacing = Random.Range(0f, 360f);

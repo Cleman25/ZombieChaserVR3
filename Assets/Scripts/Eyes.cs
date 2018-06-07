@@ -6,11 +6,16 @@ public class Eyes : MonoBehaviour {
     public float changeSpeed;
     public Material mat;
     public Color color = Color.red;
+    //public Light myLight;
 	// Use this for initialization
 	void Start () {
         if(changeSpeed <= 0) {
             changeSpeed = 1f;
         }
+
+        //if(!myLight) {
+        //    myLight = GetComponentInChildren<Light>();
+        //}
 	}
 	
 	// Update is called once per frame
@@ -23,6 +28,9 @@ public class Eyes : MonoBehaviour {
         while(t < 1) {
             t += Time.time * changeSpeed;
             mat.color = Color.Lerp(mat.color, c, t);
+            mat.SetColor("_EmissionColor", mat.color);
+            //myLight.color = Color.Lerp(myLight.color, c, t);
+            yield return null;
         }
         yield return null;
     }
