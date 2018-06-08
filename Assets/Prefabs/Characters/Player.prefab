@@ -747,7 +747,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1875635182656586}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 3.1, y: 1, z: -1.6}
+  m_LocalPosition: {x: 78, y: 11, z: 165.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4829642959851168}
@@ -2071,6 +2071,7 @@ MonoBehaviour:
   healthBarBg: {fileID: 224469893084862412}
   healthText: {fileID: 114752924596798932}
   healthSpeed: 1
+  balance: {fileID: 0}
   staminaBar: {fileID: 224989309488407278}
   staminaBarBg: {fileID: 224764051690807632}
   disableLogging: 0
@@ -2252,7 +2253,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 4eedafad5084240419e649245c7b2093, type: 3}
-    m_FontSize: 20
+    m_FontSize: 40
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 2
@@ -2811,7 +2812,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1057872480094168}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.013411045}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 224242560739805694}
@@ -2819,8 +2820,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0015258789, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -4.69, y: 0}
+  m_SizeDelta: {x: -9.8, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224989309488407278
 RectTransform:

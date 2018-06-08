@@ -27,6 +27,10 @@ public class Spawner : MonoBehaviour {
     public bool useWave;
     public int waveCount;
     public int perWave;
+
+    public AudioClip clip;
+    public AudioSource source;
+    public bool playSound;
 	// Use this for initialization
 	void Start () {
         originPoint = transform.position;
@@ -67,19 +71,13 @@ public class Spawner : MonoBehaviour {
     }
 
     public IEnumerator Spawn() {
-        //float directionFacing = Random.Range(0f, 360f);
-
-        // need to pick a random position around originPoint but inside spawnRadius
-        // must not be too close to another agent inside spawnRadius
         Vector3 point = (Random.insideUnitSphere * spawnRadius) + originPoint;
         point.y = maxPos.y;
-        //Vector3 box = transform.localScale;
-        //Vector3 pos = new Vector3(Random.Range(minPos.x, maxPos.x), maxPos.y, Random.Range(minPos.z, maxPos.z));
-        //Vector3 pos = new Vector3(Random.value * box.x, maxPos.y, Random.value * box.x);
-        //pos = transform.TransformPoint((pos) * .5f);
-        //Instantiate(ItemCycle(), pos, Quaternion.Euler(new Vector3(0f, directionFacing, 0f)));
         Instantiate(ItemCycle(), point, Quaternion.identity);
         spawnCount++;
+        if(playSound) {
+            //SoundManager
+        }
         yield return null;
     }
 
