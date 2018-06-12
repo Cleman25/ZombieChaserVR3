@@ -45,7 +45,7 @@ public class Pill : MonoBehaviour {
             }
         }
         if(intensity <= 0) {
-            intensity = 1000f;
+            intensity = 10f;
         }
         hud = GameObject.FindObjectOfType<Hud>();
         myLight = GetComponentInChildren<Light>();

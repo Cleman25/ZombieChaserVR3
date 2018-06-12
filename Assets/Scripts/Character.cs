@@ -15,6 +15,7 @@ public class Character : MonoBehaviour {
     private const float staminaTimeToRegen = 1.0f;
     public bool isRunning;
     public float pillTimer;
+    public bool isAlive = true;
     // Use this for initialization
     void Start () {
         currentStamina = maxStamina;
@@ -25,28 +26,30 @@ public class Character : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (isRunning) {
-            currentStamina = Mathf.Clamp(currentStamina - (staminaDecreasePerFrame * Time.deltaTime), 0.0f, maxStamina);
-            staminaRegenTimer = 0.0f;
-        } else if (currentStamina < maxStamina) {
-            if (staminaRegenTimer >= staminaTimeToRegen) {
-                currentStamina = Mathf.Clamp(currentStamina + (staminaIncreasePerFrame * Time.deltaTime), 0.0f, maxStamina);
-            } else {
-                staminaRegenTimer += Time.deltaTime;
+        if(isAlive) {
+            if (isRunning) {
+                currentStamina = Mathf.Clamp(currentStamina - (staminaDecreasePerFrame * Time.deltaTime), 0.0f, maxStamina);
+                staminaRegenTimer = 0.0f;
+            } else if (currentStamina < maxStamina) {
+                if (staminaRegenTimer >= staminaTimeToRegen) {
+                    currentStamina = Mathf.Clamp(currentStamina + (staminaIncreasePerFrame * Time.deltaTime), 0.0f, maxStamina);
+                } else {
+                    staminaRegenTimer += Time.deltaTime;
+                }
             }
-        }
 
-        if(currentStamina < 10) {
-            speed = defaultSpeed/2;
-        } else {
-            speed = defaultSpeed;
-        }
+            if(currentStamina < 10) {
+                speed = defaultSpeed/2;
+            } else {
+                speed = defaultSpeed;
+            }
 
-        if(speed >= 14 && isRunning) {
-            pillTimer -= Time.deltaTime;
-            if(pillTimer <= 0) {
-                pillTimer = 0;
-                defaultSpeed = originalSpeed;
+            if(speed >= 14 && isRunning) {
+                pillTimer -= Time.deltaTime;
+                if(pillTimer <= 0) {
+                    pillTimer = 0;
+                    defaultSpeed = originalSpeed;
+                }
             }
         }
     }

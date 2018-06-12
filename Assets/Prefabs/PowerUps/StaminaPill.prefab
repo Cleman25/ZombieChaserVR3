@@ -70,7 +70,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1757143265315220}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4751274130353110}
@@ -198,6 +198,8 @@ MonoBehaviour:
   clip: {fileID: 0}
   source: {fileID: 0}
   pillType: 1
+  hud: {fileID: 0}
+  spawners: []
 --- !u!135 &135424715993661828
 SphereCollider:
   m_ObjectHideFlags: 1

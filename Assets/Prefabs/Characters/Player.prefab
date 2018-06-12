@@ -746,15 +746,15 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1875635182656586}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 78, y: 11, z: 165.4}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 45.966, y: 11, z: 159.037}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4829642959851168}
   - {fileID: 4589739680844784}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!4 &4412321458845176
 Transform:
   m_ObjectHideFlags: 1
@@ -947,7 +947,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1536
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: b0625be1b18f8e94e8fb3f6b3bbe739b, type: 2}
   m_TargetDisplay: 0
@@ -983,7 +983,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294966783
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -2048,6 +2048,7 @@ MonoBehaviour:
   maxStamina: 100
   isRunning: 0
   pillTimer: 0
+  isAlive: 1
 --- !u!114 &114550419791176086
 MonoBehaviour:
   m_ObjectHideFlags: 1
