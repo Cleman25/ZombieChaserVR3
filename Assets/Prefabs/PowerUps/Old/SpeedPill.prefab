@@ -195,11 +195,15 @@ MonoBehaviour:
   myLight: {fileID: 0}
   intensity: 0
   worth: 2
-  clip: {fileID: 0}
-  source: {fileID: 0}
+  pickUpClip: {fileID: 0}
+  normalClip: {fileID: 0}
+  pickUpSource: {fileID: 0}
+  normalSource: {fileID: 0}
   pillType: 2
   hud: {fileID: 0}
   spawners: []
+  pillObject: {fileID: 0}
+  allowRotation: 0
 --- !u!135 &135562257996714726
 SphereCollider:
   m_ObjectHideFlags: 1

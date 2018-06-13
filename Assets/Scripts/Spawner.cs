@@ -31,11 +31,15 @@ public class Spawner : MonoBehaviour {
     public AudioClip clip;
     public AudioSource source;
     public bool playSound;
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
         originPoint = transform.position;
         startSpawn = true;
-        spawnRadius = 30;
+        if (spawnRadius <= 0) {
+            spawnRadius = 30;
+        }
+        spawnCount = 0;
+        spawnTimer = 0;
 	}
 	
 	// Update is called once per frame
@@ -95,18 +99,7 @@ public class Spawner : MonoBehaviour {
 
     public GameObject ItemCycle() {
         if (useCycle) {
-            //for(int i = 0; i < items.Count; i++) {
-            //    if(lastSpawnedIndex == i) {
-            //        selected = items[i];
-            //    }
-            //    lastSpawnedIndex++;
-            //    if (lastSpawnedIndex > items.Count) {
-            //        lastSpawnedIndex = 0;
-            //    }
-            //    break;
-            //}
             selected = items[lastSpawnedIndex];
-            //lastSpawnedIndex++;
             lastSpawnedIndex = (lastSpawnedIndex + 1) % items.Count;
         } else {
             selected = items[0];

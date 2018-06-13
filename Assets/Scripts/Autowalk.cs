@@ -34,82 +34,87 @@ public class Autowalk : MonoBehaviour {
     [Tooltip("This is the fixed y-coordinate.")]
     public float yOffset;
 
+    public Character player;
+
     void Start() {
         mainCamera = Camera.main.transform;
         speed = GetComponent<Character>().speed;
         pAnim = GetComponentInChildren<PlayerAnimation>();
+        player = GetComponent<Character>();
     }
 
     void FixedUpdate() {
-        if(!pAnim) {
-            pAnim = GetComponentInChildren<PlayerAnimation>();
-        }
-        speed = GetComponent<Character>().speed;
-        // Walk when the Cardboard Trigger is used 
-        if (walkWhenTriggered && !walkWhenLookDown && !walkWhenTapped && !isWalking) {
-            isWalking = true;
-        } else if (walkWhenTriggered && !walkWhenLookDown && isWalking) {
-            isWalking = false;
-        }
+        if(player.isAlive) {
+            if(!pAnim) {
+                pAnim = GetComponentInChildren<PlayerAnimation>();
+            }
+            speed = GetComponent<Character>().speed;
+            // Walk when the Cardboard Trigger is used 
+            if (walkWhenTriggered && !walkWhenLookDown && !walkWhenTapped && !isWalking) {
+                isWalking = true;
+            } else if (walkWhenTriggered && !walkWhenLookDown && isWalking) {
+                isWalking = false;
+            }
 
-        // Walk when player looks below the threshold angle 
-        if (walkWhenLookDown && !walkWhenTriggered && !walkWhenTapped && !isWalking &&
-            mainCamera.transform.eulerAngles.x >= thresholdAngle &&
-            mainCamera.transform.eulerAngles.x <= RIGHT_ANGLE) {
-            isWalking = true;
-        } else if (walkWhenLookDown && !walkWhenTriggered && isWalking &&
-            (mainCamera.transform.eulerAngles.x <= thresholdAngle ||
-                mainCamera.transform.eulerAngles.x >= RIGHT_ANGLE)) {
-            isWalking = false;
-        }
+            // Walk when player looks below the threshold angle 
+            if (walkWhenLookDown && !walkWhenTriggered && !walkWhenTapped && !isWalking &&
+                mainCamera.transform.eulerAngles.x >= thresholdAngle &&
+                mainCamera.transform.eulerAngles.x <= RIGHT_ANGLE) {
+                isWalking = true;
+            } else if (walkWhenLookDown && !walkWhenTriggered && isWalking &&
+                (mainCamera.transform.eulerAngles.x <= thresholdAngle ||
+                    mainCamera.transform.eulerAngles.x >= RIGHT_ANGLE)) {
+                isWalking = false;
+            }
 
-        // Walk when the Cardboard trigger is used and the player looks down below the threshold angle
-        if (walkWhenLookDown && walkWhenTriggered && !walkWhenTapped && !isWalking &&
-            mainCamera.transform.eulerAngles.x >= thresholdAngle &&
-            mainCamera.transform.eulerAngles.x <= RIGHT_ANGLE) {
-            isWalking = true;
-        } else if (walkWhenLookDown && walkWhenTriggered && isWalking &&
-            mainCamera.transform.eulerAngles.x >= thresholdAngle &&
-                mainCamera.transform.eulerAngles.x >= RIGHT_ANGLE) {
-            isWalking = false;
-        }
+            // Walk when the Cardboard trigger is used and the player looks down below the threshold angle
+            if (walkWhenLookDown && walkWhenTriggered && !walkWhenTapped && !isWalking &&
+                mainCamera.transform.eulerAngles.x >= thresholdAngle &&
+                mainCamera.transform.eulerAngles.x <= RIGHT_ANGLE) {
+                isWalking = true;
+            } else if (walkWhenLookDown && walkWhenTriggered && isWalking &&
+                mainCamera.transform.eulerAngles.x >= thresholdAngle &&
+                    mainCamera.transform.eulerAngles.x >= RIGHT_ANGLE) {
+                isWalking = false;
+            }
 
-        if (isWalking) {
-            pAnim.Move();
-            GetComponent<Character>().isRunning = true;
-            Vector3 direction = new Vector3(mainCamera.transform.forward.x, 0, mainCamera.transform.forward.z).normalized * speed * Time.fixedDeltaTime;
-            Quaternion rotation = Quaternion.Euler(new Vector3(0, -transform.rotation.eulerAngles.y, 0));
-            transform.Translate(rotation * direction);
-        } else {
-            pAnim.Idle();
-            GetComponent<Character>().isRunning = false;
-        }
+            if (isWalking) {
+                pAnim.Move();
+                GetComponent<Character>().isRunning = true;
+                Vector3 direction = new Vector3(mainCamera.transform.forward.x, 0, mainCamera.transform.forward.z).normalized * speed * Time.fixedDeltaTime;
+                Quaternion rotation = Quaternion.Euler(new Vector3(0, -transform.rotation.eulerAngles.y, 0));
+                transform.Translate(rotation * direction);
+            } else {
+                pAnim.Idle();
+                GetComponent<Character>().isRunning = false;
+            }
 
-        if (freezeYPosition) {
-            transform.position = new Vector3(transform.position.x, yOffset, transform.position.z);
-        }
+            if (freezeYPosition) {
+                transform.position = new Vector3(transform.position.x, yOffset, transform.position.z);
+            }
 
-        if(walkWhenTapped) {
-            foreach(Touch touch in Input.touches) {
-                //if (touch.phase == TouchPhase.Began)  {
-                    //isWalking = !isWalking;
-                    //Debug.Log("Screen tapped 2nd");
-                //}
-                if(touch.phase == TouchPhase.Ended) {
-                    isWalking = !isWalking;
-                    Debug.Log("Screen held");
+            if(walkWhenTapped) {
+                foreach(Touch touch in Input.touches) {
+                    //if (touch.phase == TouchPhase.Began)  {
+                        //isWalking = !isWalking;
+                        //Debug.Log("Screen tapped 2nd");
+                    //}
+                    if(touch.phase == TouchPhase.Ended) {
+                        isWalking = !isWalking;
+                        Debug.Log("Screen held");
+                    }
                 }
             }
-        }
 
-        //if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began && walkWhenTapped) {
-        //    isWalking = !isWalking;
-            //Debug.Log("Screen tapped");
-        //}
+            //if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began && walkWhenTapped) {
+            //    isWalking = !isWalking;
+                //Debug.Log("Screen tapped");
+            //}
 
-        if (Input.GetMouseButtonDown(0) && walkWhenTapped) {
-            isWalking = !isWalking;
-            Debug.Log("Mouse button clicked");
+            if (Input.GetMouseButtonDown(0) && walkWhenTapped) {
+                isWalking = !isWalking;
+                Debug.Log("Mouse button clicked");
+            }
         }
     }
 

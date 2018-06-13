@@ -4,26 +4,13 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 public class SoundManager : MonoBehaviour {
+    static SoundManager _instance = null;
     public const string SFX_VOL = "sfxVol";
     public const string VOICE_VOL = "voiceVol";
     public const string MUSIC_VOL = "musicVol";
     public const string MASTER_VOL = "masterVol";
 
     const float DELAY_FOR_TEST_AUDIO = 1f;
-
-    [SerializeField]
-    AudioClip _testDialogueClip;
-    public AudioClip testDialogueClip
-    {
-        get { return _testDialogueClip; }
-    }
-
-    [SerializeField]
-    AudioClip _testSFXClip;
-    public AudioClip testSFXClip
-    {
-        get { return _testSFXClip; }
-    }
 
     [SerializeField] bool disableLogging;
 
@@ -65,10 +52,18 @@ public class SoundManager : MonoBehaviour {
 
     public Canvas AudioPanel;
 
-    void Start() {
+    void Awake() {
+        if(instance) {
+            DestroyImmediate(gameObject);
+        } else {
+            instance = this;
+            DontDestroyOnLoad(this);
+        }
     }
 
-    void Update() {
+    public static SoundManager instance {
+        get { return _instance; }
+        set { _instance = value; }
     }
 
     // Generic Play Functions
@@ -89,6 +84,11 @@ public class SoundManager : MonoBehaviour {
     public void PlayMusic(AudioClip clip) {
         MusicSource.clip = clip;
         MusicSource.Play();
+    }
+
+    public void PlayMusic(AudioClip clip, AudioSource source) {
+        source.clip = clip;
+        source.Play();
     }
     
     public void PlayNextSound(AudioSource source, AudioClip[] clips, ref int clipsIndex, bool shouldInterrupt) {

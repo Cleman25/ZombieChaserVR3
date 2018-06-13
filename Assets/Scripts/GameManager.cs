@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour {
     public float wallet;
     static GameManager _instance = null;
     public GameObject playerPrefab;
+    public bool gameOver;
+    public Character player;
 	// Use this for initialization
 	void Awake () {
         if(instance) {
@@ -20,11 +22,16 @@ public class GameManager : MonoBehaviour {
         }
         coins = 0;
         wallet = 0;
+        if(playerPrefab) {
+            player = playerPrefab.GetComponent<Character>();
+        }
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if(!player.isAlive) {
+            gameOver = true;
+        }
 	}
 
     public static GameManager instance {
@@ -55,6 +62,13 @@ public class GameManager : MonoBehaviour {
                 cam.transform.localPosition = Vector3.zero;
                 cam.transform.localRotation = Quaternion.identity;
             }
+        }
+    }
+
+    public void EndGame() {
+        if(gameOver) {
+            int totalCoins = (int)coins;
+            int totalWallet = (int)wallet;
         }
     }
 }

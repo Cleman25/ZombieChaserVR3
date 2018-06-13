@@ -12,12 +12,15 @@ public class Pill : MonoBehaviour {
     public Light myLight;
     public float intensity;
     public float worth;
-    public AudioClip clip;
-    public AudioSource source;
+    public AudioClip pickUpClip;
+    public AudioClip normalClip;
+    public AudioSource pickUpSource;
+    public AudioSource normalSource;
     public PillType pillType;
     public Hud hud;
     public Spawner[] spawners;
-
+    public GameObject pillObject;
+    public bool allowRotation;
 	// Use this for initialization
 	void Start () {
 		if(worth <= 0) {
@@ -49,18 +52,26 @@ public class Pill : MonoBehaviour {
         }
         hud = GameObject.FindObjectOfType<Hud>();
         myLight = GetComponentInChildren<Light>();
-	}
+        if(normalClip) {
+            SoundManager.instance.PlayMusic(normalClip, normalSource);
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
         myLight.intensity = Mathf.PingPong(100f, intensity * Time.deltaTime);
-        transform.Rotate(0.5f, 0.5f, 0.5f);
+        if(pillObject && allowRotation) {
+            pillObject.transform.Rotate(0.5f, 0.5f, 0.5f);
+        }
 	}
 
     void OnTriggerEnter (Collider col) {
         if(col.gameObject.CompareTag("Player")) {
             Character character = col.gameObject.GetComponent<Character>();
             Health health = col.gameObject.GetComponent<Health>();
+            if(pickUpClip) {
+                SoundManager.instance.PlaySound(pickUpClip, pickUpSource);
+            }
             switch(pillType) {
                 case PillType.Health:
                     if(health.currentHealth <= 100) {
@@ -68,9 +79,8 @@ public class Pill : MonoBehaviour {
                         if (health.currentHealth > 100) {
                             health.currentHealth = 100;
                         }
-                        StartCoroutine(hud.FixHealthBar());
                         Debug.Log("You regained " + worth + " health from the " + pillType + " pill");
-                        Respawn();
+                        //Respawn();
                         Destroy(gameObject);
                     }
                     break;
@@ -80,9 +90,8 @@ public class Pill : MonoBehaviour {
                         if (character.currentStamina > 100) {
                             character.currentStamina = 100;
                         }
-                        StartCoroutine(hud.FixHealthBar());
                         Debug.Log("You regained " + worth + " stamina from the " + pillType + " pill");
-                        Respawn();
+                        //Respawn();
                         Destroy(gameObject);
                     }
                     break;
@@ -93,14 +102,14 @@ public class Pill : MonoBehaviour {
                         character.defaultSpeed = 14;
                     }
                     Debug.Log("Your speed has increased " + worth + " fold from the " + pillType + " pill");
-                    Respawn();
+                    //Respawn();
                     Destroy(gameObject);
                     break;
                 case PillType.Coin:
                     GameManager.instance.coins++;
                     GameManager.instance.wallet += worth;
                     Debug.Log("You picked up a coin! You have " + worth + " extra credits in your wallet.");
-                    Respawn();
+                    //Respawn();
                     Destroy(gameObject);
                     break;
             }
@@ -108,8 +117,12 @@ public class Pill : MonoBehaviour {
     }
 
     public void Respawn() {
-        for(int i = 0; i < spawners.Length; i++) {
-            spawners[i].SpawnMore();
-        }
+        //for(int i = 0; i < spawners.Length; i++) {
+        //    spawners[i].SpawnMore();
+        //}
+    }
+
+    public void Rotation() {
+        transform.Rotate(0.5f, 0.5f, 0.5f);
     }
 }
