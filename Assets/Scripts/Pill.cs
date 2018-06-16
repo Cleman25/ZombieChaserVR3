@@ -79,6 +79,8 @@ public class Pill : MonoBehaviour {
                         if (health.currentHealth > 100) {
                             health.currentHealth = 100;
                         }
+                        GameManager.instance.healthPowerUps++;
+                        GameManager.instance.powerUpsPickedUp++;
                         Debug.Log("You regained " + worth + " health from the " + pillType + " pill");
                         //Respawn();
                         Destroy(gameObject);
@@ -90,6 +92,8 @@ public class Pill : MonoBehaviour {
                         if (character.currentStamina > 100) {
                             character.currentStamina = 100;
                         }
+                        GameManager.instance.staminaPowerUps++;
+                        GameManager.instance.powerUpsPickedUp++;
                         Debug.Log("You regained " + worth + " stamina from the " + pillType + " pill");
                         //Respawn();
                         Destroy(gameObject);
@@ -101,6 +105,8 @@ public class Pill : MonoBehaviour {
                     if (character.defaultSpeed > 14) {
                         character.defaultSpeed = 14;
                     }
+                    GameManager.instance.speedPowerUps++;
+                    GameManager.instance.powerUpsPickedUp++;
                     Debug.Log("Your speed has increased " + worth + " fold from the " + pillType + " pill");
                     //Respawn();
                     Destroy(gameObject);

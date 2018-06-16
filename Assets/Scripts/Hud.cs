@@ -76,6 +76,8 @@ public class Hud : MonoBehaviour {
             healthText = GameObject.Find("health").GetComponent<Text>();
         }
         currentTime = 0;
+        startTime = GameManager.instance.surviveFor;
+        countDown = true;
     }
 	
 	// Update is called once per frame
@@ -89,6 +91,9 @@ public class Hud : MonoBehaviour {
             pauseTime = false;
         }
         currentTime = (minutes * 60) + seconds;
+        if(currentTime <= 0) {
+            currentTime = 0;
+        }
         balance.text = "" + GameManager.instance.wallet;
     }
 
@@ -111,15 +116,13 @@ public class Hud : MonoBehaviour {
             string min = minutes.ToString();
             seconds = ((int)time % 60);
             string sec = seconds.ToString("f0");
-            if (sec == "60")
-            {
+            if (sec == "60") {
                 sec = "59";
                 int.TryParse(min, out mval);
                 mval += 1;
             }
 
-            if (sec.Length == 1)
-            {
+            if (sec.Length == 1) {
                 sec = "0" + sec;
             }
 
