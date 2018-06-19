@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Hud : MonoBehaviour {
 
-    public GameObject player;
+    public Character player;
 
     [Header("Timer Settings (NOT IN USE):")]
     [Tooltip("Timer text prefab.")]
@@ -60,9 +60,9 @@ public class Hud : MonoBehaviour {
     public bool disableLogging = false;
 
     // Use this for initialization
-    void Start () {
+    void Awake () {
         if (!player) {
-            player = GameObject.FindGameObjectWithTag("Player");
+            player = GameManager.instance.player;
         }
         if(!timer) {
             timer = GameObject.Find("timer").GetComponent<Text>();
@@ -75,7 +75,6 @@ public class Hud : MonoBehaviour {
         if(!healthText) {
             healthText = GameObject.Find("health").GetComponent<Text>();
         }
-        currentTime = 0;
         startTime = GameManager.instance.surviveFor;
         countDown = true;
     }
@@ -93,8 +92,14 @@ public class Hud : MonoBehaviour {
         currentTime = (minutes * 60) + seconds;
         if(currentTime <= 0) {
             currentTime = 0;
+            pauseTime = true;
+            GameManager.instance.timeIsUp = true;
         }
-        balance.text = "" + GameManager.instance.wallet;
+        if(!player.isAlive) {
+            pauseTime = true;
+        }
+        GameManager.instance.timeText.text = currentTime.ToString();
+        balance.text = GameManager.instance.wallet.ToString();
     }
 
     public void TakeDamage() {

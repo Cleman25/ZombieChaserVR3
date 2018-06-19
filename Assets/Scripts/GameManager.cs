@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour {
                 StartGame();
             });
         }
-        SwitchToVR();
+        //SwitchToVR();
 	}
 	
 	// Update is called once per frame

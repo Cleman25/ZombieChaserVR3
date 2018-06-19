@@ -15,6 +15,7 @@ public class Zombie : MonoBehaviour {
     public bool isDead = false;
     public bool atNode = false;
     public ZombieAnimation zAnim;
+    public Character player;
     
     [Header("Colour/Light Settings:")]
     public Light myLight;
@@ -90,12 +91,17 @@ public class Zombie : MonoBehaviour {
         if (!zAnim) {
             zAnim = GetComponentInChildren<ZombieAnimation>();
         }
+
+        if(!player) {
+            player = GameManager.instance.player;
+        }
+
         SetState(ZombieStates.Patrol);
     }
 
     void Start () {
         if(!target) {
-            target = GameObject.FindGameObjectWithTag("Player").transform;
+            target = player.transform;
             playerLastPos = target.position;
             SetPlayerPos(target);
         }
@@ -107,41 +113,42 @@ public class Zombie : MonoBehaviour {
     }
 	
 	void Update () {
-        FindNodes();
-        Debug.DrawRay(ray.position, ray.forward, Color.red);
-        distanceToTarget = (target.position - myTransform.position).magnitude;
-        if (nodes.Count > 0) {
-            currentPos = transform.position;
-            switch (currentState) {
-                case ZombieStates.Idle:
-                    zAnim.Idle();
-                    if (!nm.pathPending && nm.remainingDistance < 0.5f) {
-                        SetState(ZombieStates.Patrol);
-                    }
-                    break;
-                case ZombieStates.Patrol:
-                    zAnim.Patrol();
-                    Patrol();
-                    break;
-                case ZombieStates.Search:
-                    zAnim.Search();
-                    Search();
-                    break;
-                case ZombieStates.Chase:
-                    zAnim.Chase();
-                    Chase();
-                    break;
-                case ZombieStates.Attack:
-                    zAnim.Attack();
-                    Attack();
-                    break;
-                case ZombieStates.Stunned:
-                    break;
-                case ZombieStates.Dead:
-                    break;
+        if(!player.isAlive) {
+            FindNodes();
+            Debug.DrawRay(ray.position, ray.forward, Color.red);
+            distanceToTarget = (target.position - myTransform.position).magnitude;
+            if (nodes.Count > 0) {
+                currentPos = transform.position;
+                switch (currentState) {
+                    case ZombieStates.Idle:
+                        zAnim.Idle();
+                        if (!nm.pathPending && nm.remainingDistance < 0.5f) {
+                            SetState(ZombieStates.Patrol);
+                        }
+                        break;
+                    case ZombieStates.Patrol:
+                        zAnim.Patrol();
+                        Patrol();
+                        break;
+                    case ZombieStates.Search:
+                        zAnim.Search();
+                        Search();
+                        break;
+                    case ZombieStates.Chase:
+                        zAnim.Chase();
+                        Chase();
+                        break;
+                    case ZombieStates.Attack:
+                        zAnim.Attack();
+                        Attack();
+                        break;
+                    case ZombieStates.Stunned:
+                        break;
+                    case ZombieStates.Dead:
+                        break;
+                }
             }
         }
-        
     }
 
     public void FindNodes() {
@@ -311,30 +318,30 @@ public class Zombie : MonoBehaviour {
         }
     }
 
-    void OnDrawGizmos() {
-        var nav = GetComponent<NavMeshAgent>();
-        if (nav == null || nav.path == null)
-            return;
+    //void OnDrawGizmos() {
+    //    var nav = GetComponent<NavMeshAgent>();
+    //    if (nav == null || nav.path == null)
+    //        return;
 
-        var line = this.GetComponent<LineRenderer>();
-        if (line == null)
-        {
-            line = this.gameObject.AddComponent<LineRenderer>();
-            line.material = new Material(Shader.Find("Sprites/Default")) { color = Color.yellow };
-            line.startWidth = 0.5f;
-            line.endWidth = 0.5f;
-            line.startColor = Color.yellow;
-            line.endColor = Color.yellow;
-        }
+    //    var line = this.GetComponent<LineRenderer>();
+    //    if (line == null)
+    //    {
+    //        line = this.gameObject.AddComponent<LineRenderer>();
+    //        line.material = new Material(Shader.Find("Sprites/Default")) { color = Color.yellow };
+    //        line.startWidth = 0.5f;
+    //        line.endWidth = 0.5f;
+    //        line.startColor = Color.yellow;
+    //        line.endColor = Color.yellow;
+    //    }
 
-        var path = nav.path;
+    //    var path = nav.path;
 
-        line.positionCount = path.corners.Length;
+    //    line.positionCount = path.corners.Length;
 
-        for (int i = 0; i < path.corners.Length; i++)
-        {
-            line.SetPosition(i, path.corners[i]);
-        }
+    //    for (int i = 0; i < path.corners.Length; i++)
+    //    {
+    //        line.SetPosition(i, path.corners[i]);
+    //    }
 
-    }
+    //}
 }

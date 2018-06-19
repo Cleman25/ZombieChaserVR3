@@ -16,12 +16,16 @@ public class Character : MonoBehaviour {
     public bool isRunning;
     public float pillTimer;
     public bool isAlive = true;
+
+    public Health health;
     // Use this for initialization
     void Start () {
         currentStamina = maxStamina;
         originalSpeed = defaultSpeed;
         if(speed <= 0)
             speed = defaultSpeed;
+
+        health = GetComponent<Health>();
 	}
 	
 	// Update is called once per frame
@@ -51,6 +55,10 @@ public class Character : MonoBehaviour {
                     defaultSpeed = originalSpeed;
                 }
             }
+        }
+
+        if(health.currentHealth <= 0) {
+            isAlive = false;
         }
     }
 }
