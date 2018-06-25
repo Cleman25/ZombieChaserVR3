@@ -7,7 +7,8 @@ public class SoundManager : MonoBehaviour {
     static SoundManager _instance = null;
     public const string SFX_VOL = "sfxVol";
     public const string VOICE_VOL = "voiceVol";
-    public const string MUSIC_VOL = "musicVol";
+    public const string MUSIC_VOL = "bgVol";
+    public const string AMB_VOL = "ambienceVol";
     public const string MASTER_VOL = "masterVol";
 
     const float DELAY_FOR_TEST_AUDIO = 1f;
@@ -17,29 +18,34 @@ public class SoundManager : MonoBehaviour {
     [Header("Audio Mixers")]
     [SerializeField]
     AudioMixer _masterMixer;
-    public AudioMixerGroup dialogueChannel {
-        get { return _masterMixer.FindMatchingGroups("Voices") [0]; }
+    public AudioMixerGroup backgroundChannel {
+        get { return _masterMixer.FindMatchingGroups("Background") [0]; }
     }
 
     public AudioMixerGroup sfxChannel {
-        get { return _masterMixer.FindMatchingGroups("Sfx") [0]; }
+        get { return _masterMixer.FindMatchingGroups("SFX") [0]; }
+    }
+
+    public AudioMixerGroup ambienceChannel {
+        get { return _masterMixer.FindMatchingGroups("Ambience")[0]; }
+    }
+
+    public AudioMixerGroup zombieChannel {
+        get { return _masterMixer.FindMatchingGroups("Zombies")[0]; }
     }
 
     [Header("Audio Sources")]
-    public AudioSource MusicSource;
-    public AudioSource zombieSource;
-    public AudioSource ambientSource;
+    public AudioSource backgroundSource;
+    public AudioSource zombiesSource;
+    public AudioSource ambienceSource;
     public AudioSource sfxSource;
-    public AudioSource uiSource;
 
     private AudioSource[] audioSources = new AudioSource[4];
 
     [Header("Music")]
-    public AudioClip MenuMusic;
-    public AudioClip levelMusicCalm;
-    public AudioClip levelMusicIntense;
-    public AudioClip GameOverMusic;
+    public AudioClip ambienceMusic;
     public AudioClip WinningMusic;
+    public AudioClip zombieSOund;
 
     // Guard Dialogue Type
     public enum DialogueType {
@@ -82,8 +88,8 @@ public class SoundManager : MonoBehaviour {
     }
 
     public void PlayMusic(AudioClip clip) {
-        MusicSource.clip = clip;
-        MusicSource.Play();
+        backgroundSource.clip = clip;
+        backgroundSource.Play();
     }
 
     public void PlayMusic(AudioClip clip, AudioSource source) {

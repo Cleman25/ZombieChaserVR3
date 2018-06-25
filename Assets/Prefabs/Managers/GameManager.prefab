@@ -309,7 +309,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1632231125618620
 GameObject:
   m_ObjectHideFlags: 1
@@ -1218,13 +1218,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 1875635182656586, guid: d6397e7ac0d14da489c6dedaef947725,
     type: 2}
-  player: {fileID: 0}
+  player: {fileID: 114520142844109380, guid: d6397e7ac0d14da489c6dedaef947725, type: 2}
   gameScene:
-    sceneAsset: {fileID: 102900000, guid: 471753a9cf2fcf44bb46419e687bc1da, type: 3}
-    sceneName: Scenes/Start
-  startScene:
     sceneAsset: {fileID: 102900000, guid: 065dc66dbb03e934b8f020e65134c04d, type: 3}
     sceneName: Scenes/Level
+  startScene:
+    sceneAsset: {fileID: 102900000, guid: 471753a9cf2fcf44bb46419e687bc1da, type: 3}
+    sceneName: Scenes/Start
+  gameOverScene:
+    sceneAsset: {fileID: 102900000, guid: daf707501b17e2b43a959c91ad926d53, type: 3}
+    sceneName: Scenes/GameOver
   gameWon: 0
   gameLost: 0
   timeIsUp: 0
@@ -1232,20 +1235,18 @@ MonoBehaviour:
   mainPanel: {fileID: 1294315418876048}
   gameOverPanel: {fileID: 1612046146407196}
   startButton: {fileID: 114689736339950678}
-  gameStatus: {fileID: 114092653090945442}
-  healthText: {fileID: 114585013436925056}
-  speedText: {fileID: 114267598472395772}
-  staminaText: {fileID: 114441903148759676}
-  coinsText: {fileID: 114314454428011834}
-  walletText: {fileID: 114850195244629266}
-  timeText: {fileID: 114614113316579578}
   powerUpsPickedUp: 0
   healthPowerUps: 0
   speedPowerUps: 0
   staminaPowerUps: 0
+  timeLeft: 0
   coins: 0
   wallet: 0
-  surviveFor: 0
+  surviveFor: 60
+  gameStatus: d
+  ambienceMusic: {fileID: 8300000, guid: ad0b343d884344b4ba0b9c3db278380f, type: 3}
+  startMusic: {fileID: 8300000, guid: c252e007b1b129749a602ecd475aff47, type: 3}
+  gameOverMusic: {fileID: 8300000, guid: 38251d8a07c1ee24fbb3b2fbf9a073da, type: 3}
 --- !u!114 &114614113316579578
 MonoBehaviour:
   m_ObjectHideFlags: 1

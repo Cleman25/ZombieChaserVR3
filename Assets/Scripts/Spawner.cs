@@ -40,6 +40,7 @@ public class Spawner : MonoBehaviour {
         }
         spawnCount = 0;
         spawnTimer = 0;
+        source = GetComponentInChildren<AudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -80,6 +81,7 @@ public class Spawner : MonoBehaviour {
         Instantiate(ItemCycle(), point, Quaternion.identity);
         spawnCount++;
         if(playSound) {
+            SoundManager.instance.PlaySound(clip, source);
             //SoundManager
         }
         yield return null;

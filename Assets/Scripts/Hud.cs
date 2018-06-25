@@ -62,7 +62,8 @@ public class Hud : MonoBehaviour {
     // Use this for initialization
     void Awake () {
         if (!player) {
-            player = GameManager.instance.player;
+            //player = GameManager.instance.player;
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
         }
         if(!timer) {
             timer = GameObject.Find("timer").GetComponent<Text>();
@@ -98,7 +99,7 @@ public class Hud : MonoBehaviour {
         if(!player.isAlive) {
             pauseTime = true;
         }
-        GameManager.instance.timeText.text = currentTime.ToString();
+        GameManager.instance.timeLeft = currentTime;
         balance.text = GameManager.instance.wallet.ToString();
     }
 

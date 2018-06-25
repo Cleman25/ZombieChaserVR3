@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour {
     public Character player;
     public SceneField gameScene;
     public SceneField startScene;
+    public SceneField gameOverScene;
     public bool gameWon;
     public bool gameLost;
     public bool timeIsUp;
@@ -19,20 +20,18 @@ public class GameManager : MonoBehaviour {
     public GameObject mainPanel;
     public GameObject gameOverPanel;
     public Button startButton;
-    public Text gameStatus;
-    public Text healthText;
-    public Text speedText;
-    public Text staminaText;
-    public Text coinsText;
-    public Text walletText;
-    public Text timeText;
     public int powerUpsPickedUp = 0;
     public int healthPowerUps = 0;
     public int speedPowerUps = 0;
     public int staminaPowerUps = 0;
+    public float timeLeft = 0;
     public float coins;
     public float wallet;
     public float surviveFor;
+    public string gameStatus;
+    public AudioClip ambienceMusic;
+    public AudioClip startMusic;
+    public AudioClip gameOverMusic;
     //public SceneField gameOverScene;
     // Use this for initialization
     void Awake () {
@@ -51,7 +50,7 @@ public class GameManager : MonoBehaviour {
             surviveFor = 300;
         }
         if(mainPanel) {
-            TogglePanel(mainPanel);
+            ActivatePanel(mainPanel);
         }
         if(startButton) {
             startButton.onClick.AddListener(() => {
@@ -59,14 +58,23 @@ public class GameManager : MonoBehaviour {
             });
         }
         //SwitchToVR();
-	}
+    }
 	
+    void Start () {
+        SoundManager.instance.PlayMusic(startMusic);
+    }
 	// Update is called once per frame
 	void Update () {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
 		if(!player.isAlive || timeIsUp) {
             gameOver = true;
         }
         if (gameOver) {
+            if(!player.isAlive) {
+                LoseGame();
+            } else if(timeIsUp) {
+                WinGame();
+            }
             EndGame();
         }
 
@@ -81,13 +89,8 @@ public class GameManager : MonoBehaviour {
         }
 
         if(gameLost || gameWon) {
-            TogglePanel(gameOverPanel);
+            //TogglePanel(gameOverPanel);
         }
-        staminaText.text = staminaPowerUps.ToString();
-        speedText.text = speedPowerUps.ToString();
-        healthText.text = healthPowerUps.ToString();
-        coinsText.text = coins.ToString();
-        walletText.text = wallet.ToString();
     }
 
     public static GameManager instance {
@@ -98,13 +101,13 @@ public class GameManager : MonoBehaviour {
     public void LoseGame() {
         gameLost = true;
         gameWon = false;
-        gameStatus.text = "You Lost";
+        gameStatus = "You Lost";
     }
 
     public void WinGame() {
         gameLost = false;
         gameWon = true;
-        gameStatus.text = "You Won";
+        gameStatus = "You Won";
     }
 
     public void ActivatePanel(GameObject panel) {
@@ -122,7 +125,6 @@ public class GameManager : MonoBehaviour {
     public void TogglePanel(GameObject panel) {
         GameObject[] panels =  new GameObject[2];
         panels[0] = mainPanel;
-        panels[1] = gameOverPanel;
         foreach(GameObject p in panels) {
             if(p != panel) {
                 DeActivatePanel(p);
@@ -159,14 +161,15 @@ public class GameManager : MonoBehaviour {
     }
 
     public void EndGame() {
-        int totalCoins = (int)coins;
-        int totalWallet = (int)wallet;
+        SoundManager.instance.PlayMusic(gameOverMusic);
+        SwitchScenes(gameOverScene);
     }
 
     public void StartGame() {
         DeActivatePanel(mainPanel);
         SwitchScenes(gameScene);
-        //SwitchToVR();
+        SoundManager.instance.backgroundSource.Stop();
+        SoundManager.instance.PlayMusic(ambienceMusic, SoundManager.instance.ambienceSource);
     }
 
     public void SwitchScenes(SceneField scene) {
@@ -174,9 +177,12 @@ public class GameManager : MonoBehaviour {
     }
 
     public void MainMenu() {
-        TogglePanel(mainPanel);
+        gameOver = false;
+        gameLost = false;
+        gameWon = false;
+        ActivatePanel(mainPanel);
         SwitchScenes(startScene);
-        //SwitchTo2D();
+        SoundManager.instance.PlayMusic(startMusic);
     }
 
     public void QuitGame() {

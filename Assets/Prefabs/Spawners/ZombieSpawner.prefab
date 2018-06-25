@@ -77,7 +77,7 @@ MonoBehaviour:
   maxPos: {x: 30, y: 1, z: 30}
   itemRadius: 0
   items:
-  - {fileID: 1658325077351256, guid: 5e9cc045e5e61a04b9767d7e16a83c6e, type: 2}
+  - {fileID: 0}
   lastSpawnedIndex: 0
   selected: {fileID: 1658325077351256, guid: 5e9cc045e5e61a04b9767d7e16a83c6e, type: 2}
   leftOver: []
@@ -86,3 +86,5 @@ MonoBehaviour:
   useWave: 0
   waveCount: 0
   perWave: 0
+  clip: {fileID: 8300000, guid: 57f4f338930240a44937f1374cb66061, type: 3}
+  playSound: 1

@@ -381,6 +381,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1040779127475618}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: b4cf6201f06226c4c929c0c02432e540, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disableLogging: 0
+  _masterMixer: {fileID: 24100000, guid: be607f8e43fea0d4a8ff150360060067, type: 2}
+  backgroundSource: {fileID: 82877962758677874}
+  zombiesSource: {fileID: 0}
+  ambienceSource: {fileID: 82193051944004372}
+  sfxSource: {fileID: 82313237422254772}
+  ambienceMusic: {fileID: 8300000, guid: ad0b343d884344b4ba0b9c3db278380f, type: 3}
+  WinningMusic: {fileID: 0}
+  zombieSOund: {fileID: 0}
+  AudioPanel: {fileID: 0}

@@ -69,6 +69,9 @@ public class Zombie : MonoBehaviour {
     public float attackDistance = 2;
     public float repeatAttackTime = 1;
 
+    [Header("Sound Settings:")]
+    public AudioSource source;
+    public AudioClip clip;
     void Awake() {
         myTransform = transform;
 
@@ -93,7 +96,8 @@ public class Zombie : MonoBehaviour {
         }
 
         if(!player) {
-            player = GameManager.instance.player;
+            //player = GameManager.instance.player;
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
         }
 
         SetState(ZombieStates.Patrol);
@@ -110,10 +114,15 @@ public class Zombie : MonoBehaviour {
         if(nodes.Count > 0) {
             currentNode = Random.Range(0, nodes.Count);
         }
+        source = GetComponentInChildren<AudioSource>();
+        if(clip) {
+            SoundManager.instance.PlayMusic(clip, source);
+            source.volume = 0.3f;
+        }
     }
 	
 	void Update () {
-        if(!player.isAlive) {
+        if(player.isAlive) {
             FindNodes();
             Debug.DrawRay(ray.position, ray.forward, Color.red);
             distanceToTarget = (target.position - myTransform.position).magnitude;
